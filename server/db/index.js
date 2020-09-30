@@ -11,6 +11,7 @@ const pool = mysql.createPool({
 
 let backend = {};
 
+// Get all orders
 backend.all = () => {
   return new Promise((resolve, reject) => {
     pool.query("SELECT * FROM orders", (err, results) => {
@@ -22,6 +23,7 @@ backend.all = () => {
   });
 };
 
+// Get order
 backend.one = (id) => {
   return new Promise((resolve, reject) => {
     pool.query("SELECT * FROM orders WHERE id = ?", [id], (err, results) => {
@@ -33,12 +35,14 @@ backend.one = (id) => {
   });
 };
 
-backend.new = (id, game_id, game_name, quantity, price) => {
+// Insert order into DB
+backend.new = (id, cart, date) => {
   return new Promise((resolve, reject) => {
-    let values = [id, game_id, game_name, quantity, price];
+    let myCart = JSON.stringify(cart)
+    let values = [id, myCart, date];
 
     pool.query(
-      "INSERT INTO `orders` (`id`, `game_id`, `game_name`, `quantity`, `price`) VALUES (?)",
+      "INSERT INTO `orders` (`id`, `cart`, date) VALUES (?)",
       [values],
       (err, results) => {
         if (err) {

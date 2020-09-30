@@ -1,5 +1,14 @@
 const express = require("express");
 const db = require("../db");
+const nodemailer = require("nodemailer");
+
+var transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "milujemmail@gmail.com",
+    pass: "robokona1",
+  },
+});
 
 const router = express.Router();
 
@@ -25,10 +34,14 @@ router.get("/getOrder/:id", async (req, res, next) => {
   }
 });
 
-// Add new order
+// Add new order & Send email
 router.post("/addorder", async (req, res, next) => {
     try {
-      let results = await db.new(null, req.body.game_id, req.body.game_name, req.body.quantity, req.body.price);
+      let results = await db.new(
+        null,
+        req.body.cart,
+        req.body.date
+      );
       res.json(results);
     } catch (e) {
       console.log(e);
@@ -36,17 +49,36 @@ router.post("/addorder", async (req, res, next) => {
     }
   });
 
-// add new order
-// router.post("/addorder", function (req, res) {
-//   let sql = `INSERT INTO orders(game_id, game_name, quantity, price) VALUES (?)`;
-//   let values = [req.body.game_id, req.body.game_name, req.body.quantity, req.body.price];
-//   db.query(sql, [values], function (err, data, fields) {
-//     if (err) throw err;
-//     res.json({
-//       status: 200,
-//       message: "New user added successfully",
+// // Add new order & Send email
+// router.post("/addorder", async (req, res, next) => {
+//   try {
+//     let results = await db.new(
+//       null,
+//       req.body.game_id,
+//       req.body.game_name,
+//       req.body.quantity,
+//       req.body.price
+//     );
+//     res.json(results);
+
+//     let mailOptions = {
+//       from: "milujemmail@gmail.com",
+//       to: "robokona@gmail.com",
+//       subject: "Order confirmation",
+//       text: "You have ordered" + " " + req.body.game_name,
+//     };
+
+//     transporter.sendMail(mailOptions, function (error, info) {
+//       if (error) {
+//         console.log(error);
+//       } else {
+//         console.log("Email sent: " + info.response);
+//       }
 //     });
-//   });
+//   } catch (e) {
+//     console.log(e);
+//     res.sendStatus(500);
+//   }
 // });
 
 module.exports = router;
