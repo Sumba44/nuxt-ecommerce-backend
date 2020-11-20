@@ -93,6 +93,7 @@ function makeid(length) {
 
 // REGISTER
 router.post("/register", async (req, res, next) => {
+
   // validate inputs
   const { error } = registerValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -139,6 +140,7 @@ router.post("/register", async (req, res, next) => {
 
 // LOGIN
 router.post("/login", async (req, res, next) => {
+  
   // validate inputs
   const { error } = loginValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);

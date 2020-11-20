@@ -91,7 +91,7 @@ backend.user = (_id, id, name, email, password, date) => {
   });
 };
 
-// check if email exists
+// Check if email exists
 backend.userExists = (email) => {
   return new Promise((resolve, reject) => {
     pool.query(
@@ -107,7 +107,7 @@ backend.userExists = (email) => {
   });
 };
 
-// check if email exists
+// Get user details [private]
 backend.getUser = (id) => {
   return new Promise((resolve, reject) => {
     pool.query(
