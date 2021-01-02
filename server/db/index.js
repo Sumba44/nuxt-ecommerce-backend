@@ -42,13 +42,29 @@ backend.one = (id) => {
 backend.product = (id) => {
   return new Promise((resolve, reject) => {
     pool.query(
-      "SELECT * FROM products WHERE product_id = ?",
+      "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id WHERE products.slug = ? AND product_connect.primary_category = 1",
       [id],
       (err, results) => {
         if (err) {
           return reject(err);
         }
         return resolve(results[0]);
+      }
+    );
+  });
+};
+
+// Get all products in category
+backend.allInCategory = (id) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id WHERE categories.category_slug = ?",
+      [id],
+      (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(results);
       }
     );
   });

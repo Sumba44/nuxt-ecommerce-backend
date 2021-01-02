@@ -19,6 +19,17 @@ var transporter = nodemailer.createTransport({
   },
 });
 
+// test
+router.get("/test/", async (req, res, next) => {
+  try {
+    res.status(200).json({status:"OK"})
+    console.log(new Date().toLocaleString(), "| INFO | Test method OK");
+  } catch (e) {
+    console.log(e);
+    res.Status(500);
+  }
+});
+
 // Get all orders
 router.get("/getallorders/", async (req, res, next) => {
   try {
@@ -45,6 +56,18 @@ router.get("/getorder/:id", async (req, res, next) => {
 router.get("/getproduct/:id", async (req, res, next) => {
   try {
     let results = await db.product(req.params.id);
+    res.json(results);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+});
+
+// Get all products in category
+router.get("/getallproductsincategory/:id", async (req, res, next) => {
+  try {
+    let results = await db.allInCategory(req.params.id);
+    res.setHeader('Content-Type', 'application/json');
     res.json(results);
   } catch (e) {
     console.log(e);
