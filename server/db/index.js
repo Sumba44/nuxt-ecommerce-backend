@@ -42,7 +42,7 @@ backend.one = (id) => {
 backend.product = (id) => {
   return new Promise((resolve, reject) => {
     pool.query(
-      "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug, suppliers.supplier_name, suppliers.supplier_desc, suppliers.supplier_logo FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id JOIN suppliers ON suppliers.id = products.supplier WHERE products.slug = ? AND product_connect.primary_category = 1",
+      "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.wholesale_price, products.sale, products.date_added, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug, suppliers.supplier_name, suppliers.supplier_desc, suppliers.supplier_logo FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id JOIN suppliers ON suppliers.id = products.supplier WHERE products.slug = ? AND product_connect.primary_category = 1",
       [id],
       (err, results) => {
         if (err) {
@@ -58,7 +58,7 @@ backend.product = (id) => {
 backend.allInCategory = (id) => {
   return new Promise((resolve, reject) => {
     pool.query(
-      "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id WHERE categories.category_slug = ?",
+      "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.wholesale_price, products.sale, products.date_added, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id WHERE categories.category_slug = ?",
       [id],
       (err, results) => {
         if (err) {
