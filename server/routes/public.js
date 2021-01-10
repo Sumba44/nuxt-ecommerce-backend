@@ -75,6 +75,18 @@ router.get("/getallproductsincategory/:id", async (req, res, next) => {
   }
 });
 
+// Get all products filtered search
+router.get("/filterproducts/", async (req, res, next) => {
+  try {
+    let results = await db.filterProducts(req);
+    res.setHeader('Content-Type', 'application/json');
+    res.json(results);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+});
+
 // Add new order & Send email
 router.post("/addorder", async (req, res, next) => {
   try {

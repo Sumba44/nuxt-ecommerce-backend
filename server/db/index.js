@@ -1,5 +1,5 @@
 const mysql = require("mysql");
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 
 dotenv.config();
 
@@ -70,6 +70,39 @@ backend.allInCategory = (id) => {
   });
 };
 
+// Get all products filtered search
+backend.filterProducts = (req) => {
+  return new Promise((resolve, reject) => {
+    let conditions = [];
+    let values = [];
+
+    if (req.query.rating) {
+      conditions.push(`rating=?`);
+      values.push(req.query.rating);
+    }
+    if (req.query.sale) {
+      conditions.push(`sale=?`);
+      values.push(req.query.sale);
+    }
+    if (req.query.quantity) {
+      conditions.push(`quantity=?`);
+      values.push(req.query.quantity);
+    }
+
+    pool.query(
+      "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.wholesale_price, products.sale, products.date_added, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id " +
+        (conditions.length ? "WHERE " + conditions.join(" AND ") : ""),
+      values,
+      (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(results);
+      }
+    );
+  });
+};
+
 // Insert order into DB
 backend.new = (id, cart, date) => {
   return new Promise((resolve, reject) => {
@@ -126,16 +159,12 @@ backend.userExists = (email) => {
 // Get user details [private]
 backend.getUser = (id) => {
   return new Promise((resolve, reject) => {
-    pool.query(
-      "SELECT * FROM users WHERE id = ?",
-      [id],
-      (err, results) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(results[0]);
+    pool.query("SELECT * FROM users WHERE id = ?", [id], (err, results) => {
+      if (err) {
+        return reject(err);
       }
-    );
+      return resolve(results[0]);
+    });
   });
 };
 
