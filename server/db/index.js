@@ -75,10 +75,11 @@ backend.filterProducts = (req) => {
   return new Promise((resolve, reject) => {
     let conditions = [];
     let values = [];
+    let sort = [];
 
-    if (req.query.rating) {
-      conditions.push(`rating=?`);
-      values.push(req.query.rating);
+    if (req.query.category) {
+      conditions.push(`category_slug=?`);
+      values.push(req.query.category);
     }
     if (req.query.sale) {
       conditions.push(`sale=?`);
@@ -89,9 +90,13 @@ backend.filterProducts = (req) => {
       values.push(req.query.quantity);
     }
 
+    if (req.query.sort) {
+      sort = `ORDER BY ` + req.query.sorttype + ' '  + req.query.sort;
+    }
+
     pool.query(
       "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.wholesale_price, products.sale, products.date_added, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id " +
-        (conditions.length ? "WHERE " + conditions.join(" AND ") : ""),
+        (conditions.length ? "WHERE " + conditions.join(" AND ") + sort : ""),
       values,
       (err, results) => {
         if (err) {
