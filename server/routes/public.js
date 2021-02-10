@@ -19,6 +19,40 @@ var transporter = nodemailer.createTransport({
   },
 });
 
+// Pagination
+// function paginatedResults(model) {
+//   return async (req, res, next) => {
+//     const page = parseInt(req.query.page)
+//     const limit = parseInt(req.query.limit)
+
+//     const startIndex = (page - 1) * limit
+//     const endIndex = page * limit
+
+//     const results = {}
+
+//     if (endIndex < products.length) {
+//       results.next = {
+//         page: page + 1,
+//         limit: limit
+//       }
+//     }
+    
+//     if (startIndex > 0) {
+//       results.previous = {
+//         page: page - 1,
+//         limit: limit
+//       }
+//     }
+//     try {
+//       results.results = await model.find().limit(limit).skip(startIndex).exec()
+//       res.paginatedResults = results
+//       next()
+//     } catch (e) {
+//       res.status(500).json({ message: e.message })
+//     }
+//   }
+// }
+
 // test
 router.get("/test/", async (req, res, next) => {
   try {
@@ -63,11 +97,60 @@ router.get("/getproduct/:id", async (req, res, next) => {
   }
 });
 
+// Get all categories
+router.get("/search", async (req, res, next) => {
+  try {
+    let results = await db.searchAll(req.query.search);
+    res.setHeader('Content-Type', 'application/json');
+    res.json(results);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+});
+
+// Get all categories
+router.get("/getallcategories", async (req, res, next) => {
+  try {
+    let results = await db.categories();
+    res.setHeader('Content-Type', 'application/json');
+    res.json(results);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+});
+
 // Get all products in category
 router.get("/getallproductsincategory/:id", async (req, res, next) => {
+
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
+  const results = {};
+
   try {
-    let results = await db.allInCategory(req.params.id);
-    res.setHeader('Content-Type', 'application/json');
+    results.data = await db.allInCategory(req.params.id);
+
+    if (endIndex < results.data.length) {
+      results.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+
+    if (startIndex > 0) {
+      results.previous = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+
+    results.data = results.data.slice(startIndex, endIndex);
+    res.setHeader("Content-Type", "application/json");
     res.json(results);
   } catch (e) {
     console.log(e);
@@ -77,14 +160,48 @@ router.get("/getallproductsincategory/:id", async (req, res, next) => {
 
 // Get all products filtered search
 router.get("/filterproducts/", async (req, res, next) => {
+
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
+  const results = {};
+
   try {
-    let results = await db.filterProducts(req);
-    res.setHeader('Content-Type', 'application/json');
+    results.data = await db.filterProducts(req);
+
+    if (endIndex < results.data.length) {
+      results.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+
+    if (startIndex > 0) {
+      results.previous = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+
+    results.data = results.data.slice(startIndex, endIndex);
+    res.setHeader("Content-Type", "application/json");
     res.json(results);
   } catch (e) {
     console.log(e);
     res.sendStatus(500);
   }
+
+  // try {
+  //   let results = await db.filterProducts(req);
+  //   res.setHeader('Content-Type', 'application/json');
+  //   res.json(results);
+  // } catch (e) {
+  //   console.log(e);
+  //   res.sendStatus(500);
+  // }
 });
 
 // Add new order & Send email
