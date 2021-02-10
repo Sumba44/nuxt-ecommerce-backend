@@ -97,10 +97,22 @@ router.get("/getproduct/:id", async (req, res, next) => {
   }
 });
 
-// Get all categories
+// Search all products
 router.get("/search", async (req, res, next) => {
   try {
     let results = await db.searchAll(req.query.search);
+    res.setHeader('Content-Type', 'application/json');
+    res.json(results);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+});
+
+// Search all categories
+router.get("/searchCategories", async (req, res, next) => {
+  try {
+    let results = await db.searchAllCategory(req.query.search);
     res.setHeader('Content-Type', 'application/json');
     res.json(results);
   } catch (e) {

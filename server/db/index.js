@@ -54,11 +54,27 @@ backend.product = (id) => {
   });
 };
 
-// Search
+// Search Products
 backend.searchAll = (search) => {
   return new Promise((resolve, reject) => {
     pool.query(
-      "SELECT products.product_name, products.rating, products.slug, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id WHERE `product_name` LIKE " + "'%" + search + "%' ORDER BY `rating` DESC",
+      "SELECT products.product_name, products.rating, products.slug, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id WHERE `product_name` LIKE " + "'%" + search + "%' AND product_connect.primary_category = 1 ORDER BY `rating` DESC",
+      [search],
+      (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(results);
+      }
+    );
+  });
+};
+
+// Search Categories
+backend.searchAllCategory = (search) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      "SELECT category, category_slug FROM categories WHERE `category` LIKE " + "'%" + search + "%'",
       [search],
       (err, results) => {
         if (err) {
