@@ -1,5 +1,6 @@
 const mysql = require("mysql");
 const dotenv = require("dotenv");
+var fs = require('fs');
 
 dotenv.config();
 
@@ -13,6 +14,27 @@ const pool = mysql.createPool({
 });
 
 let backend = {};
+
+// Create formatted date
+Date.prototype.yyyymmdd = function () {
+  var mm = this.getMonth() + 1; // getMonth() is zero-based
+  var dd = this.getDate();
+
+  return [
+    (dd > 9 ? "" : "0") + dd,
+    (mm > 9 ? "" : "0") + mm,
+    this.getFullYear(),
+  ].join("");
+};
+
+// Create logging files
+var logger = fs.createWriteStream('X:/backend-' + new Date().yyyymmdd() + '.log', {
+  flags: 'a' // old data will be preserved
+})
+
+backend.test = () => {
+  return logger.write(new Date().toLocaleString() + ' | INFO | Test method OK' + "\r\n");
+}
 
 // Get all orders
 backend.all = () => {
