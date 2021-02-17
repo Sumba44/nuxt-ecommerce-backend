@@ -31,28 +31,6 @@ router.get("/test/", async (req, res, next) => {
   }
 });
 
-// Get all orders
-router.get("/getallorders/", async (req, res, next) => {
-  try {
-    let results = await db.all();
-    res.json(results);
-  } catch (e) {
-    console.log(e);
-    res.sendStatus(500);
-  }
-});
-
-// Get one order
-router.get("/getorder/:id", async (req, res, next) => {
-  try {
-    let results = await db.one(req.params.id);
-    res.json(results);
-  } catch (e) {
-    console.log(e);
-    res.sendStatus(500);
-  }
-});
-
 // Get product
 router.get("/getproduct/:id", async (req, res, next) => {
   try {
@@ -172,22 +150,35 @@ router.get("/filterproducts/", async (req, res, next) => {
     console.log(e);
     res.sendStatus(500);
   }
-
-  // try {
-  //   let results = await db.filterProducts(req);
-  //   res.setHeader('Content-Type', 'application/json');
-  //   res.json(results);
-  // } catch (e) {
-  //   console.log(e);
-  //   res.sendStatus(500);
-  // }
 });
 
 // Add new order & Send email
 router.post("/addorder", async (req, res, next) => {
   try {
-    let results = await db.new(null, req.body.cart, req.body.date);
+    await db.newOrder(null, req.body.cart, req.body.date);
     res.sendStatus(200);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+});
+
+// Get all orders
+router.get("/getallorders/", async (req, res, next) => {
+  try {
+    let results = await db.all();
+    res.json(results);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+});
+
+// Get one order
+router.get("/getorder/:id", async (req, res, next) => {
+  try {
+    let results = await db.one(req.params.id);
+    res.json(results);
   } catch (e) {
     console.log(e);
     res.sendStatus(500);
@@ -239,7 +230,7 @@ router.post("/register", async (req, res, next) => {
 
   try {
     let idGen = makeid(20);
-    await db.user(
+    await db.registerUser(
       null,
       idGen,
       req.body.name,

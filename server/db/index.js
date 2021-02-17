@@ -178,7 +178,7 @@ backend.filterProducts = (req) => {
 };
 
 // Insert order into DB
-backend.new = (id, cart, date) => {
+backend.newOrder = (id, cart, date) => {
   return new Promise((resolve, reject) => {
     let myCart = JSON.stringify(cart);
     let values = [id, myCart, date];
@@ -197,7 +197,7 @@ backend.new = (id, cart, date) => {
 };
 
 // new user
-backend.user = (_id, id, name, email, password, date) => {
+backend.registerUser = (_id, id, name, email, password, date) => {
   return new Promise((resolve, reject) => {
     let values = [_id, id, name, email, password, date];
 
