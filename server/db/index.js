@@ -1,6 +1,6 @@
 const mysql = require("mysql");
 const dotenv = require("dotenv");
-var fs = require('fs');
+var fs = require("fs");
 
 dotenv.config();
 
@@ -28,13 +28,18 @@ Date.prototype.yyyymmdd = function () {
 };
 
 // Create logging files
-var logger = fs.createWriteStream('X:/backend-' + new Date().yyyymmdd() + '.log', {
-  flags: 'a' // old data will be preserved
-})
+var logger = fs.createWriteStream(
+  "X:/backend-" + new Date().yyyymmdd() + ".log",
+  {
+    flags: "a", // old data will be preserved
+  }
+);
 
 backend.test = () => {
-  return logger.write(new Date().toLocaleString() + ' | INFO | Test method OK' + "\r\n");
-}
+  return logger.write(
+    new Date().toLocaleString() + " | INFO | Test method OK" + "\r\n"
+  );
+};
 
 // Get all orders
 backend.all = () => {
@@ -80,7 +85,10 @@ backend.product = (id) => {
 backend.searchAll = (search) => {
   return new Promise((resolve, reject) => {
     pool.query(
-      "SELECT products.product_name, products.rating, products.slug, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id WHERE `product_name` LIKE " + "'%" + search + "%' AND product_connect.primary_category = 1 ORDER BY `rating` DESC",
+      "SELECT products.product_name, products.rating, products.slug, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id WHERE `product_name` LIKE " +
+        "'%" +
+        search +
+        "%' AND product_connect.primary_category = 1 ORDER BY `rating` DESC",
       [search],
       (err, results) => {
         if (err) {
@@ -96,7 +104,10 @@ backend.searchAll = (search) => {
 backend.searchAllCategory = (search) => {
   return new Promise((resolve, reject) => {
     pool.query(
-      "SELECT category, category_slug FROM categories WHERE `category` LIKE " + "'%" + search + "%'",
+      "SELECT category, category_slug FROM categories WHERE `category` LIKE " +
+        "'%" +
+        search +
+        "%'",
       [search],
       (err, results) => {
         if (err) {
@@ -111,15 +122,12 @@ backend.searchAllCategory = (search) => {
 // Get all categories
 backend.categories = () => {
   return new Promise((resolve, reject) => {
-    pool.query(
-      "SELECT * FROM categories",
-      (err, results) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(results);
+    pool.query("SELECT * FROM categories", (err, results) => {
+      if (err) {
+        return reject(err);
       }
-    );
+      return resolve(results);
+    });
   });
 };
 
@@ -158,9 +166,9 @@ backend.filterProducts = (req) => {
       conditions.push(`quantity=?`);
       values.push(req.query.quantity);
     }
-    
+
     if (req.query.sortmethod) {
-      sort = `ORDER BY ` + req.query.sortby + ' '  + req.query.sortmethod;
+      sort = `ORDER BY ` + req.query.sortby + " " + req.query.sortmethod;
     }
 
     pool.query(
@@ -192,6 +200,56 @@ backend.newOrder = (id, cart, date) => {
         }
         return resolve(results);
       }
+    );
+  });
+};
+
+// Add a new product
+backend.newProduct = (
+  id,
+  title,
+  desc,
+  shortDesc,
+  rating,
+  price,
+  wholesalePrice,
+  sale,
+  quantity,
+  productImage,
+  productVideo,
+  slug,
+  supplier
+) => {
+  return new Promise((resolve, reject) => {
+    let values = [
+      id,
+      title,
+      shortDesc,
+      desc,
+      rating,
+      price,
+      wholesalePrice,
+      sale,
+      quantity,
+      productImage,
+      productVideo,
+      slug,
+      supplier
+    ];
+
+    pool.query(
+      "INSERT INTO `products`( `product_id`, `product_name`, `short_desc`, `long_desc`, `rating`, `price`, `wholesale_price`, `sale`, `quantity`, `product_image`, `product_video`, `slug`, `supplier` ) VALUES (?)",
+      [values],
+      (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(results);
+      }
+    );
+
+    logger.write(
+      new Date().toLocaleString() + " | INFO | New product added | " + slug + "\r\n"
     );
   });
 };
