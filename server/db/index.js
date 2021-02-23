@@ -131,6 +131,18 @@ backend.categories = () => {
   });
 };
 
+// Get category info
+backend.getCategory = (slug) => {
+  return new Promise((resolve, reject) => {
+    pool.query("SELECT * FROM categories WHERE category_slug = ?", [slug], (err, results) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(results);
+    });
+  });
+};
+
 // Get all products in category
 backend.allInCategory = (id) => {
   return new Promise((resolve, reject) => {

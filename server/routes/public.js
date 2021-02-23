@@ -78,6 +78,18 @@ router.get("/getallcategories", async (req, res, next) => {
   }
 });
 
+// Get category info
+router.get("/getcategory", async (req, res, next) => {
+  try {
+    let results = await db.getCategory(req.query.slug);
+    res.setHeader('Content-Type', 'application/json');
+    res.json(results);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+});
+
 // Get all products in category
 router.get("/getallproductsincategory/:id", async (req, res, next) => {
 
