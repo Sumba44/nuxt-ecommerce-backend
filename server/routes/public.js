@@ -6,10 +6,9 @@ const { loginValidation } = require("../validation");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const router = express.Router();
 
 dotenv.config();
-
-const router = express.Router();
 
 var transporter = nodemailer.createTransport({
   service: "gmail",
