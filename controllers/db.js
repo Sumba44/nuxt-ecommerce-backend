@@ -13,15 +13,15 @@ const pool = mysql.createPool({
   port: process.env.DB_PORT,
 });
 
-let backend = {};
+let db = {};
 
 // Test method
-backend.test = () => {
+db.test = () => {
   logger.log("INFO", "Test method OK");
 };
 
 // Get all orders
-backend.all = () => {
+db.all = () => {
   return new Promise((resolve, reject) => {
     pool.query("SELECT * FROM orders", (err, results) => {
       if (err) {
@@ -33,7 +33,7 @@ backend.all = () => {
 };
 
 // Get one order
-backend.one = (id) => {
+db.one = (id) => {
   return new Promise((resolve, reject) => {
     pool.query("SELECT * FROM orders WHERE id = ?", [id], (err, results) => {
       if (err) {
@@ -45,7 +45,7 @@ backend.one = (id) => {
 };
 
 // Get product
-backend.product = (id) => {
+db.product = (id) => {
   return new Promise((resolve, reject) => {
     pool.query(
       "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.wholesale_price, products.sale, products.date_added, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug, suppliers.supplier_name, suppliers.supplier_desc, suppliers.supplier_logo FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id JOIN suppliers ON suppliers.id = products.supplier WHERE products.slug = ? AND product_connect.primary_category = 1",
@@ -61,7 +61,7 @@ backend.product = (id) => {
 };
 
 // Search Products
-backend.searchAll = (search) => {
+db.searchAll = (search) => {
   return new Promise((resolve, reject) => {
     pool.query(
       "SELECT products.product_name, products.rating, products.slug, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id WHERE `product_name` LIKE " +
@@ -80,7 +80,7 @@ backend.searchAll = (search) => {
 };
 
 // Search Categories
-backend.searchAllCategory = (search) => {
+db.searchAllCategory = (search) => {
   return new Promise((resolve, reject) => {
     pool.query(
       "SELECT category, category_slug FROM categories WHERE `category` LIKE " +
@@ -99,7 +99,7 @@ backend.searchAllCategory = (search) => {
 };
 
 // Get all categories
-backend.categories = () => {
+db.categories = () => {
   return new Promise((resolve, reject) => {
     pool.query("SELECT * FROM categories", (err, results) => {
       if (err) {
@@ -111,7 +111,7 @@ backend.categories = () => {
 };
 
 // Get category info
-backend.getCategory = (slug) => {
+db.getCategory = (slug) => {
   return new Promise((resolve, reject) => {
     pool.query(
       "SELECT * FROM categories WHERE category_slug = ?",
@@ -127,7 +127,7 @@ backend.getCategory = (slug) => {
 };
 
 // Get all products in category
-backend.allInCategory = (id) => {
+db.allInCategory = (id) => {
   return new Promise((resolve, reject) => {
     pool.query(
       "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.wholesale_price, products.sale, products.date_added, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id WHERE categories.category_slug = ?",
@@ -143,7 +143,7 @@ backend.allInCategory = (id) => {
 };
 
 // Get all products filtered search
-backend.filterProducts = (req) => {
+db.filterProducts = (req) => {
   return new Promise((resolve, reject) => {
     let conditions = [];
     let values = [];
@@ -181,7 +181,7 @@ backend.filterProducts = (req) => {
 };
 
 // Insert order into DB
-backend.newOrder = (id, cart, date) => {
+db.newOrder = (id, cart, date) => {
   return new Promise((resolve, reject) => {
     let myCart = JSON.stringify(cart);
     let values = [id, myCart, date];
@@ -200,7 +200,7 @@ backend.newOrder = (id, cart, date) => {
 };
 
 // Add a new product
-backend.newProduct = (
+db.newProduct = (
   id,
   title,
   desc,
@@ -253,7 +253,7 @@ backend.newProduct = (
 };
 
 // new user
-backend.registerUser = (_id, id, name, email, password, date) => {
+db.registerUser = (_id, id, name, email, password, date) => {
   return new Promise((resolve, reject) => {
     let values = [_id, id, name, email, password, date];
 
@@ -271,7 +271,7 @@ backend.registerUser = (_id, id, name, email, password, date) => {
 };
 
 // Check if email exists
-backend.userExists = (email) => {
+db.userExists = (email) => {
   return new Promise((resolve, reject) => {
     pool.query(
       "SELECT * FROM users WHERE email = ?",
@@ -287,7 +287,7 @@ backend.userExists = (email) => {
 };
 
 // Get user details [private]
-backend.getUser = (id) => {
+db.getUser = (id) => {
   return new Promise((resolve, reject) => {
     pool.query("SELECT * FROM users WHERE id = ?", [id], (err, results) => {
       if (err) {
@@ -298,4 +298,4 @@ backend.getUser = (id) => {
   });
 };
 
-module.exports = backend;
+module.exports = db;
