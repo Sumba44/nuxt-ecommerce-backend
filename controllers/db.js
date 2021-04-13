@@ -1,6 +1,6 @@
 const mysql = require("mysql");
 const dotenv = require("dotenv");
-var fs = require("fs");
+const logger = require("./logger");
 
 dotenv.config();
 
@@ -15,30 +15,9 @@ const pool = mysql.createPool({
 
 let backend = {};
 
-// Create formatted date
-Date.prototype.yyyymmdd = function () {
-  var mm = this.getMonth() + 1; // getMonth() is zero-based
-  var dd = this.getDate();
-
-  return [
-    (dd > 9 ? "" : "0") + dd,
-    (mm > 9 ? "" : "0") + mm,
-    this.getFullYear(),
-  ].join("");
-};
-
-// Create logging files
-var logger = fs.createWriteStream(
-  "X:/backend-" + new Date().yyyymmdd() + ".log",
-  {
-    flags: "a", // old data will be preserved
-  }
-);
-
+// Test method
 backend.test = () => {
-  return logger.write(
-    new Date().toLocaleString() + " | INFO | Test method OK" + "\r\n"
-  );
+  logger.log("INFO", "Test method OK");
 };
 
 // Get all orders
@@ -53,7 +32,7 @@ backend.all = () => {
   });
 };
 
-// Get order
+// Get one order
 backend.one = (id) => {
   return new Promise((resolve, reject) => {
     pool.query("SELECT * FROM orders WHERE id = ?", [id], (err, results) => {
@@ -134,12 +113,16 @@ backend.categories = () => {
 // Get category info
 backend.getCategory = (slug) => {
   return new Promise((resolve, reject) => {
-    pool.query("SELECT * FROM categories WHERE category_slug = ?", [slug], (err, results) => {
-      if (err) {
-        return reject(err);
+    pool.query(
+      "SELECT * FROM categories WHERE category_slug = ?",
+      [slug],
+      (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(results);
       }
-      return resolve(results);
-    });
+    );
   });
 };
 
@@ -246,7 +229,7 @@ backend.newProduct = (
       productImage,
       productVideo,
       slug,
-      supplier
+      supplier,
     ];
 
     pool.query(
@@ -261,7 +244,10 @@ backend.newProduct = (
     );
 
     logger.write(
-      new Date().toLocaleString() + " | INFO | New product added | " + slug + "\r\n"
+      new Date().toLocaleString() +
+        " | INFO | New product added | " +
+        slug +
+        "\r\n"
     );
   });
 };

@@ -1,4 +1,5 @@
 const express = require("express");
+const router = express.Router();
 const db = require("../controllers/db");
 const nodemailer = require("nodemailer");
 const { registerValidation } = require("../controllers/validation");
@@ -6,7 +7,6 @@ const { loginValidation } = require("../controllers/validation");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const router = express.Router();
 
 dotenv.config();
 
@@ -18,7 +18,7 @@ var transporter = nodemailer.createTransport({
   },
 });
 
-// test
+// Test method
 router.get("/test/", async (req, res, next) => {
   try {
     await db.test();
