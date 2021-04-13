@@ -14,8 +14,8 @@ var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
+    pass: process.env.EMAIL_PASSWORD
+  }
 });
 
 // Test method
@@ -45,7 +45,7 @@ router.get("/getproduct/:id", async (req, res, next) => {
 router.get("/search", async (req, res, next) => {
   try {
     let results = await db.searchAll(req.query.search);
-    res.setHeader('Content-Type', 'application/json');
+    res.setHeader("Content-Type", "application/json");
     res.json(results);
   } catch (e) {
     console.log(e);
@@ -57,7 +57,7 @@ router.get("/search", async (req, res, next) => {
 router.get("/searchCategories", async (req, res, next) => {
   try {
     let results = await db.searchAllCategory(req.query.search);
-    res.setHeader('Content-Type', 'application/json');
+    res.setHeader("Content-Type", "application/json");
     res.json(results);
   } catch (e) {
     console.log(e);
@@ -69,7 +69,7 @@ router.get("/searchCategories", async (req, res, next) => {
 router.get("/getallcategories", async (req, res, next) => {
   try {
     let results = await db.categories();
-    res.setHeader('Content-Type', 'application/json');
+    res.setHeader("Content-Type", "application/json");
     res.json(results);
   } catch (e) {
     console.log(e);
@@ -81,7 +81,7 @@ router.get("/getallcategories", async (req, res, next) => {
 router.get("/getcategory", async (req, res, next) => {
   try {
     let results = await db.getCategory(req.query.slug);
-    res.setHeader('Content-Type', 'application/json');
+    res.setHeader("Content-Type", "application/json");
     res.json(results);
   } catch (e) {
     console.log(e);
@@ -91,7 +91,6 @@ router.get("/getcategory", async (req, res, next) => {
 
 // Get all products in category
 router.get("/getallproductsincategory/:id", async (req, res, next) => {
-
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
 
@@ -106,14 +105,14 @@ router.get("/getallproductsincategory/:id", async (req, res, next) => {
     if (endIndex < results.data.length) {
       results.next = {
         page: page + 1,
-        limit: limit,
+        limit: limit
       };
     }
 
     if (startIndex > 0) {
       results.previous = {
         page: page - 1,
-        limit: limit,
+        limit: limit
       };
     }
 
@@ -128,7 +127,6 @@ router.get("/getallproductsincategory/:id", async (req, res, next) => {
 
 // Get all products filtered search
 router.get("/filterproducts/", async (req, res, next) => {
-
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
 
@@ -143,14 +141,14 @@ router.get("/filterproducts/", async (req, res, next) => {
     if (endIndex < results.data.length) {
       results.next = {
         page: page + 1,
-        limit: limit,
+        limit: limit
       };
     }
 
     if (startIndex > 0) {
       results.previous = {
         page: page - 1,
-        limit: limit,
+        limit: limit
       };
     }
 
@@ -201,22 +199,13 @@ function formatDate(date) {
   var hours = date.getHours();
   var minutes = (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
   var strTime = hours + ":" + minutes;
-  return (
-    date.getDate() +
-    "/" +
-    (date.getMonth() + 1) +
-    "/" +
-    date.getFullYear() +
-    " " +
-    strTime
-  );
+  return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear() + " " + strTime;
 }
 
 // generate random ID
 function makeid(length) {
   var result = "";
-  var characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   var charactersLength = characters.length;
   for (var i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -226,7 +215,6 @@ function makeid(length) {
 
 // REGISTER
 router.post("/register", async (req, res, next) => {
-
   // validate inputs
   const { error } = registerValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -241,21 +229,14 @@ router.post("/register", async (req, res, next) => {
 
   try {
     let idGen = makeid(20);
-    await db.registerUser(
-      null,
-      idGen,
-      req.body.name,
-      req.body.email,
-      hashPassword,
-      formatDate(new Date())
-    );
+    await db.registerUser(null, idGen, req.body.name, req.body.email, hashPassword, formatDate(new Date()));
     res.status(200).send(idGen);
 
     let mailOptions = {
       from: "milujemmail@gmail.com",
       to: "robokona@gmail.com",
       subject: "Registration",
-      text: "Your registration was successful",
+      text: "Your registration was successful"
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
@@ -273,7 +254,6 @@ router.post("/register", async (req, res, next) => {
 
 // LOGIN
 router.post("/login", async (req, res, next) => {
-  
   // validate inputs
   const { error } = loginValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
