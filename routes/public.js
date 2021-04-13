@@ -1,8 +1,8 @@
 const express = require("express");
-const db = require("../db");
+const db = require("../controllers/db");
 const nodemailer = require("nodemailer");
-const { registerValidation } = require("../validation");
-const { loginValidation } = require("../validation");
+const { registerValidation } = require("../controllers/validation");
+const { loginValidation } = require("../controllers/validation");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");

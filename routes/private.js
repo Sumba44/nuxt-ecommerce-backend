@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const verify = require("../middleware/verifyToken");
-const db = require("../db");
+const db = require("../controllers/db");
 
 router.get("/getUser", verify, async (req, res) => {
   try {
