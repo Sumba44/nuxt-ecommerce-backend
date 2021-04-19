@@ -23,7 +23,7 @@ router.get("/test/", async (req, res, next) => {
   try {
     await db.test();
     res.status(200).json("test OK");
-    console.log(new Date().toLocaleString(), "| INFO | Test method OK");
+  //  console.log(new Date().toLocaleString(), "| INFO | Test method OK");
   } catch (e) {
     console.log(e);
     res.Status(500);
