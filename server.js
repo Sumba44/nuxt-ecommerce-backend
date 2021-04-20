@@ -15,7 +15,7 @@ app.use(Cors());
 app.set("view engine", "ejs");
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 60 * 1000 * 15, // 15 minutes
   max: 100 // limit each IP to 100 requests per windowMs
 });
 
