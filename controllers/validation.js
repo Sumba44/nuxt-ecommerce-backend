@@ -6,10 +6,10 @@ const registerValidation = data => {
   const schema = Joi.object({
     name: Joi.string().min(6).required(),
     email: Joi.string().min(6).required().email(),
-    password: Joi.string().min(6).required()
+
+    // must contain one lower, one upper, one number, one special char (_#?!@$%^&*-)
+    password: Joi.string().pattern(new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[_#?!@$%^&*-]).{8,}$")).required(),
   });
-  //   const {error} = schema.validate(req.body);
-  //   if(error) return res.status(400).send(error.details[0].message)
 
   return schema.validate(data);
 };
