@@ -194,14 +194,6 @@ router.get("/getorder/:id", async (req, res, next) => {
   }
 });
 
-// set date time
-function formatDate(date) {
-  var hours = date.getHours();
-  var minutes = (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
-  var strTime = hours + ":" + minutes;
-  return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear() + " " + strTime;
-}
-
 // generate random ID
 function makeid(length) {
   var result = "";
@@ -229,7 +221,7 @@ router.post("/register", async (req, res, next) => {
 
   try {
     let idGen = makeid(20);
-    await db.registerUser(null, idGen, req.body.name, req.body.email, hashPassword, formatDate(new Date()));
+    await db.registerUser(null, idGen, req.body.name, req.body.email, hashPassword, new Date());
     res.status(200).send(idGen);
 
     let mailOptions = {
