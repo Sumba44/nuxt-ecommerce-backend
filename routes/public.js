@@ -7,6 +7,7 @@ const { loginValidation } = require("../controllers/validation");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const upload = require("../controllers/upload");
 
 dotenv.config();
 
@@ -18,10 +19,19 @@ var transporter = nodemailer.createTransport({
   }
 });
 
+router.post("/upload/", (req, res) => {
+  try {
+    upload.singleFile(req, res);
+  } catch (e) {
+    console.log(e);
+    res.Status(500);
+  }
+});
+
 // Test method
 router.get("/test/", async (req, res, next) => {
   try {
-    await db.test();
+    db.test();
     res.status(200).json("test OK");
   } catch (e) {
     console.log(e);
