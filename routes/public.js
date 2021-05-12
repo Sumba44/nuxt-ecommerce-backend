@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../controllers/db");
+const db = require("../models/db");
 const nodemailer = require("nodemailer");
 const { registerValidation } = require("../controllers/validation");
 const { loginValidation } = require("../controllers/validation");
@@ -23,7 +23,6 @@ router.get("/test/", async (req, res, next) => {
   try {
     await db.test();
     res.status(200).json("test OK");
-  //  console.log(new Date().toLocaleString(), "| INFO | Test method OK");
   } catch (e) {
     console.log(e);
     res.Status(500);

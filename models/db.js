@@ -1,6 +1,6 @@
 const mysql = require("mysql");
 const dotenv = require("dotenv");
-const logger = require("./logger");
+const logger = require("../controllers/logger");
 
 dotenv.config();
 
