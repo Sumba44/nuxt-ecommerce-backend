@@ -8,6 +8,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const upload = require("../controllers/upload");
+const { v4: uuidv4 } = require('uuid');
 
 dotenv.config();
 
@@ -203,17 +204,6 @@ router.get("/getorder/:id", async (req, res, next) => {
   }
 });
 
-// generate random ID
-function makeid(length) {
-  var result = "";
-  var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
 // REGISTER
 router.post("/register", async (req, res, next) => {
   // validate inputs
@@ -229,7 +219,7 @@ router.post("/register", async (req, res, next) => {
   const hashPassword = await bcrypt.hash(req.body.password, salt);
 
   try {
-    let idGen = makeid(20);
+    let idGen = uuidv4();
     await db.registerUser(null, idGen, req.body.name, req.body.email, hashPassword, new Date());
     res.status(200).send(idGen);
 
