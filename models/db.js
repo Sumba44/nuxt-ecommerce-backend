@@ -17,7 +17,14 @@ let db = {};
 
 // Test method
 db.test = () => {
-  logger.log("INFO", "Test method OK");
+  return new Promise((resolve, reject) => {
+    pool.query("SELECT 1", (err, results) => {
+      if (err) {
+        return reject(err);
+      } 
+      return resolve(results);
+    });
+  });
 };
 
 // Get all orders

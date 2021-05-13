@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../models/db");
-const nodemailer = require("nodemailer");
 const { registerValidation } = require("../controllers/validation");
 const { loginValidation } = require("../controllers/validation");
 const bcrypt = require("bcryptjs");
@@ -9,31 +8,28 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const upload = require("../controllers/upload");
 const { v4: uuidv4 } = require('uuid');
+const email = require("../controllers/email");
+const logger = require("../controllers/logger");
 
 dotenv.config();
-
-var transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
-  }
-});
-
-router.post("/upload/", (req, res) => {
-  try {
-    upload.singleFile(req, res);
-  } catch (e) {
-    console.log(e);
-    res.Status(500);
-  }
-});
 
 // Test method
 router.get("/test/", async (req, res, next) => {
   try {
-    db.test();
+    let results = await db.test();
+    logger.log("INFO", "DB Test Method OK", JSON.stringify(results));
     res.status(200).json("test OK");
+  } catch (err) {
+    console.log(err);
+    logger.log("ERROR", "DB Test failed", err);
+    res.Status(500);
+  }
+});
+
+// Upload
+router.post("/upload/", (req, res) => {
+  try {
+    upload.singleFile(req, res);
   } catch (e) {
     console.log(e);
     res.Status(500);
@@ -221,22 +217,9 @@ router.post("/register", async (req, res, next) => {
   try {
     let idGen = uuidv4();
     await db.registerUser(null, idGen, req.body.name, req.body.email, hashPassword, new Date());
+
+    email.registration(req.body.email)
     res.status(200).send(idGen);
-
-    let mailOptions = {
-      from: "milujemmail@gmail.com",
-      to: "robokona@gmail.com",
-      subject: "Registration",
-      text: "Your registration was successful"
-    };
-
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
   } catch (e) {
     console.log(e);
     res.status(500).send(e);

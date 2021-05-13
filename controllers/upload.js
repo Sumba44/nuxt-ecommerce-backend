@@ -48,7 +48,7 @@ exports.singleFile = (req, res, err) => {
       if (req.file == undefined) {
         res.status(400).send("No file selected");
       } else {
-        console.log(exten);
+        // console.log(exten);
         // resize image
         if (exten == "jpg" || exten == "png") {
           sharp(req.file.path)
