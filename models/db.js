@@ -246,10 +246,10 @@ db.newProduct = (
 // new user
 db.registerUser = (_id, id, name, email, password, date) => {
   return new Promise((resolve, reject) => {
-    let values = [_id, id, name, email, password, date];
+    let values = [_id, id, name, email, password, date, 0];
 
     pool.query(
-      "INSERT INTO `users` (`_id`, `id`, `name`, `email`, `password`, `date`) VALUES (?)",
+      "INSERT INTO `users` (`_id`, `id`, `name`, `email`, `password`, `date`, `verified`) VALUES (?)",
       [values],
       (err, results) => {
         if (err) {
@@ -269,6 +269,18 @@ db.userExists = email => {
         return reject(err);
       }
       return resolve(results[0]);
+    });
+  });
+};
+
+// Check if email was verified
+db.verifyEmail = (id) => {
+  return new Promise((resolve, reject) => {
+    pool.query("UPDATE users SET verified = 1 WHERE id = ?", [id], (err, results) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(results);
     });
   });
 };

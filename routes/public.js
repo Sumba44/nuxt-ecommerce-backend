@@ -259,8 +259,21 @@ router.post("/register", async (req, res, next) => {
     let idGen = uuidv4();
     await db.registerUser(null, idGen, req.body.name, req.body.email, hashPassword, new Date());
 
-    email.registration(req.body.email);
+    // send email to confirm registration
+    email.registration(idGen, req.body.email);
     res.status(200).send(idGen);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e);
+  }
+});
+
+// Email verification
+router.get("/verifyemail", async (req, res, next) => {
+  try {
+    const user = jwt.verify(req.query.token, process.env.EMAIL_SECRET);
+    await db.verifyEmail(user.id);
+    res.status(200).send("Email verified");
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
@@ -276,6 +289,9 @@ router.post("/login", async (req, res, next) => {
   // check if email exists
   const user = await db.userExists(req.body.email);
   if (!user) return res.status(405).send("Username or password is wrong.");
+
+  // check if email was verified
+  if (!user.verified) return res.status(406).send("Registration not comfirmed yet.");
 
   // is password correct?
   const validPass = await bcrypt.compare(req.body.password, user.password);
