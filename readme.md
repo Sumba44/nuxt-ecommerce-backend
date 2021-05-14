@@ -16,16 +16,18 @@ npm run dev
 
 ## TO DO List
 
-Logging
+* Logging
+* Filter products SQL
+* Pagination
 
 ## Built With
 
-* Node.js
-* Express.js
+Node.js
+Express.js
 
 ## Authors
 
-* **Robert Kona** - *Initial work* - [Sumba44](https://github.com/Sumba44)
+**Robert Kona** - *Initial work* - [Sumba44](https://github.com/Sumba44)
 
 ## License
 
