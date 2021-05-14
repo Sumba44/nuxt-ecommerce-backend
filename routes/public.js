@@ -7,9 +7,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const upload = require("../controllers/upload");
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 const email = require("../controllers/email");
 const logger = require("../controllers/logger");
+const fs = require("fs");
+const sharp = require("sharp");
+const chalk = require("chalk");
 
 dotenv.config();
 
@@ -18,10 +21,48 @@ router.get("/test/", async (req, res, next) => {
   try {
     let results = await db.test();
     logger.log("INFO", "DB Test Method OK", JSON.stringify(results));
-    res.status(200).json("test OK");
+    res.status(200).json("DB Test Method OK");
   } catch (err) {
     console.log(err);
     logger.log("ERROR", "DB Test failed", err);
+    res.Status(500);
+  }
+});
+
+// Images folder optimalizator
+router.post("/optimize/", (req, res, next) => {
+  try {
+    fs.readdir("./public/images/opt", (err, files) => {
+      files.forEach(file => {
+        let currFile = "./public/images/opt/" + file;
+
+        sharp(currFile)
+          .resize(1280, 768, { fit: "inside" })
+          .toFormat("jpg")
+          .jpeg({ mozjpeg: true, quality: 70 })
+          .toFile("./public/images/opt/auto-" + file)
+          .then(data => {
+            console.log(chalk.yellow(file) + " Resized");
+            // delete original file
+            fs.unlink(currFile, err => {
+              if (err) {
+                console.error(err);
+                res.status(500).send(err);
+                return;
+              }
+              console.log(chalk.blue(currFile) + " Deleted");
+            });
+          })
+          .catch(err => {
+            console.log(err);
+            res.status(500).send(err);
+          });
+      });
+    });
+    res.status(200).send("All files successfully resized!");
+  } catch (err) {
+    console.log(err);
+    logger.log("ERROR", "Error while resizing files", err);
     res.Status(500);
   }
 });
@@ -218,7 +259,7 @@ router.post("/register", async (req, res, next) => {
     let idGen = uuidv4();
     await db.registerUser(null, idGen, req.body.name, req.body.email, hashPassword, new Date());
 
-    email.registration(req.body.email)
+    email.registration(req.body.email);
     res.status(200).send(idGen);
   } catch (e) {
     console.log(e);
