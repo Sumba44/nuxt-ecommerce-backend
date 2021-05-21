@@ -23,20 +23,24 @@ exports.registration = (id, email) => {
       expiresIn: "1d"
     },
     (err, emailToken) => {
-      const url = `http://localhost:3000/confirmation/?token=${emailToken}`;
-
-      transporter.sendMail({
+      if (err) {
+        console.log(error);
+        logger.log("ERROR", "Error during JWT Sign (Registration email)", error);
+      }
+      let url = `http://localhost:3000/confirmation/?token=${emailToken}`;
+      let mailOptions = {
         to: email,
         subject: "Confirm Email",
         html: `Please click this email to confirm your email: <a href="${url}">${url}</a>`
+      };
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (err) {
+          console.log(err);
+          logger.log("ERROR", "Error while sending registration e-mail", error);
+        } else {
+          console.log("Email sent: " + email + " | " + info.response);
+        }
       });
-
-      if (err) {
-        logger.log("ERROR", "Error while sending registration e-mail", error);
-        console.log(err);
-      } else {
-        console.log("Email sent: " + email);
-      }
     }
   );
 };

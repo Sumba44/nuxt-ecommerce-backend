@@ -23,7 +23,8 @@ npm run dev
 ## Built With
 
 Node.js  
-Express.js
+Express.js  
+MySQL
 
 ## Authors
 

@@ -50,7 +50,7 @@ exports.singleFile = (req, res, err) => {
       } else {
         // console.log(exten);
         // resize image
-        if (exten == "jpg" || exten == "png") {
+        if (exten == "jpg" || exten == "jpeg" || exten == "png") {
           sharp(req.file.path)
             .resize(1280)
             .toFormat("jpg")

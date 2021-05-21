@@ -30,36 +30,44 @@ router.get("/test/", async (req, res, next) => {
 });
 
 // Images folder optimalizator
-router.post("/optimize/", (req, res, next) => {
+router.post("/optimize/", async (req, res, next) => {
   try {
     fs.readdir("./public/images/opt", (err, files) => {
-      files.forEach(file => {
-        let currFile = "./public/images/opt/" + file;
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        if (files.length > 0) {
+          files.forEach(file => {
+            let currFile = "./public/images/opt/" + file;
 
-        sharp(currFile)
-          .resize(1280, 768, { fit: "inside" })
-          .toFormat("jpg")
-          .jpeg({ mozjpeg: true, quality: 70 })
-          .toFile("./public/images/opt/auto-" + file)
-          .then(data => {
-            console.log(chalk.yellow(file) + " Resized");
-            // delete original file
-            fs.unlink(currFile, err => {
-              if (err) {
-                console.error(err);
+            sharp(currFile)
+              .resize(1520, 480, { fit: "inside" })
+              .toFormat("jpg")
+              .jpeg({ mozjpeg: true, quality: 90 })
+              .toFile("./public/images/opt/optimized-" + file)
+              .then(data => {
+                console.log(chalk.yellow(file) + " Resized");
+                // delete original file
+                // fs.unlink(currFile, err => {
+                //   if (err) {
+                //     console.error(err);
+                //     res.status(500).send(err);
+                //     return;
+                //   }
+                //   console.log(chalk.blue(currFile) + " Deleted");
+                // });
+              })
+              .catch(err => {
+                console.log(err);
                 res.status(500).send(err);
-                return;
-              }
-              console.log(chalk.blue(currFile) + " Deleted");
-            });
-          })
-          .catch(err => {
-            console.log(err);
-            res.status(500).send(err);
+              });
           });
-      });
+          res.status(200).send("All files successfully resized!");
+        } else {
+          res.status(405).send("No files in the directory");
+        }
+      }
     });
-    res.status(200).send("All files successfully resized!");
   } catch (err) {
     console.log(err);
     logger.log("ERROR", "Error while resizing files", err);
@@ -68,7 +76,7 @@ router.post("/optimize/", (req, res, next) => {
 });
 
 // Upload
-router.post("/upload/", (req, res) => {
+router.post("/upload/", async (req, res) => {
   try {
     upload.singleFile(req, res);
   } catch (e) {
@@ -298,7 +306,9 @@ router.post("/login", async (req, res, next) => {
   if (!validPass) return res.status(401).send("Username or password is wrong.");
 
   // create and assign a token
-  const token = jwt.sign({ id: user.id }, process.env.TOKEN_SECRET);
+  const token = jwt.sign({ id: user.id }, process.env.TOKEN_SECRET, {
+    expiresIn: "30d"
+  });
   res.header("token", token).send(token);
 });
 
