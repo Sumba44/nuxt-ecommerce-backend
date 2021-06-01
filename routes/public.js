@@ -14,17 +14,17 @@ const fs = require("fs");
 const sharp = require("sharp");
 const chalk = require("chalk");
 
-const dbm = require("../models/index");
+const dbs = require("../models");
 
 dotenv.config();
 
 // Test method
 router.get("/test/", async (req, res, next) => {
   try {
-    await dbm.sequelize.authenticate();
-    console.log('Connection has been established successfully.');
+    await dbs.sequelize.authenticate();
+    console.log("Connection has been established successfully.");
   } catch (error) {
-    console.error('Unable to connect to the database:', error);
+    console.error("Unable to connect to the database:", error);
   }
   // try {
   //   let results = await db.test();
@@ -35,6 +35,17 @@ router.get("/test/", async (req, res, next) => {
   //   logger.log("ERROR", "DB Test failed", err);
   //   res.Status(500);
   // }
+});
+
+// DB Sync method
+router.get("/sync/", async (req, res, next) => {
+  try {
+    // force or alter
+    await dbs.User.sync({ alter: true });
+    res.status(200).json("The table for the User model was just (re)created!");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
 });
 
 // Images folder optimalizator

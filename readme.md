@@ -16,6 +16,7 @@ npm run dev
 
 ## TO DO List
 
+* Check what happens if two users get same UID during registration
 * Logging
 * Filter products SQL
 * Pagination
