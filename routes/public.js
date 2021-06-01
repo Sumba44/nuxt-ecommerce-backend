@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../models/db");
+const db = require("../controllers/db");
 const { registerValidation } = require("../controllers/validation");
 const { loginValidation } = require("../controllers/validation");
 const bcrypt = require("bcryptjs");
@@ -14,19 +14,27 @@ const fs = require("fs");
 const sharp = require("sharp");
 const chalk = require("chalk");
 
+const dbm = require("../models/index");
+
 dotenv.config();
 
 // Test method
 router.get("/test/", async (req, res, next) => {
   try {
-    let results = await db.test();
-    logger.log("INFO", "DB Test Method OK", JSON.stringify(results));
-    res.status(200).json("DB Test Method OK");
-  } catch (err) {
-    console.log(err);
-    logger.log("ERROR", "DB Test failed", err);
-    res.Status(500);
+    await dbm.sequelize.authenticate();
+    console.log('Connection has been established successfully.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
   }
+  // try {
+  //   let results = await db.test();
+  //   logger.log("INFO", "DB Test Method OK", JSON.stringify(results));
+  //   res.status(200).json("DB Test Method OK");
+  // } catch (err) {
+  //   console.log(err);
+  //   logger.log("ERROR", "DB Test failed", err);
+  //   res.Status(500);
+  // }
 });
 
 // Images folder optimalizator

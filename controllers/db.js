@@ -1,17 +1,17 @@
-const mysql = require("mysql");
+// const mysql = require("mysql");
 const dotenv = require("dotenv");
-const logger = require("../controllers/logger");
+const logger = require("./logger");
 
 dotenv.config();
 
-const pool = mysql.createPool({
-  connectionLimit: 10,
-  password: process.env.DB_PASSWORD,
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT
-});
+// const pool = mysql.createPool({
+//   connectionLimit: 10,
+//   password: process.env.DB_PASSWORD,
+//   user: process.env.DB_USER,
+//   database: process.env.DB_DATABASE,
+//   host: process.env.DB_HOST,
+//   port: process.env.DB_PORT
+// });
 
 let db = {};
 
