@@ -1,7 +1,7 @@
 ("use strict");
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
+  class CategoryConnect extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,36 +11,28 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  User.init(
+  CategoryConnect.init(
     {
-      user_id: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
-      uid: {
-        type: DataTypes.STRING,
-        unique: true
+      product_id: {
+        type: DataTypes.INTEGER
       },
-      name: {
-        type: DataTypes.STRING
+      category_id: {
+        type: DataTypes.INTEGER
       },
-      email: {
-        type: DataTypes.STRING,
-        unique: true
-      },
-      password: {
-        type: DataTypes.STRING
-      },
-      verified: {
-        type: DataTypes.INTEGER,
-      },
+      primary: {
+        type: DataTypes.INTEGER
+      }
     },
     {
       sequelize,
-      tableName: "users",
-      modelName: "User"
+      tableName: "category_connect",
+      modelName: "CategoryConnect"
     }
   );
-  return User;
+  return CategoryConnect;
 };

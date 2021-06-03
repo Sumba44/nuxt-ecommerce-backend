@@ -23,8 +23,10 @@ router.get("/test/", async (req, res, next) => {
   try {
     await dbs.sequelize.authenticate();
     console.log("Connection has been established successfully.");
+    res.status(200).json("DB Test Method OK");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
+    res.Status(500);
   }
   // try {
   //   let results = await db.test();
@@ -43,6 +45,16 @@ router.get("/sync/", async (req, res, next) => {
     // force or alter
     await dbs.User.sync({ alter: true });
     res.status(200).json("The table for the User model was just (re)created!");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+});
+
+// DB select all
+router.get("/findall/", async (req, res, next) => {
+  try {
+    const results = await dbs.User.findAll();
+    res.status(200).json(results);
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
