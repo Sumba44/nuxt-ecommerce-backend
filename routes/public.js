@@ -15,6 +15,7 @@ const sharp = require("sharp");
 const chalk = require("chalk");
 
 const dbs = require("../models");
+const { product } = require("../controllers/db");
 
 dotenv.config();
 
@@ -43,7 +44,7 @@ router.get("/test/", async (req, res, next) => {
 router.get("/sync/", async (req, res, next) => {
   try {
     // force or alter
-    await dbs.User.sync({ alter: true });
+    await dbs.User.sync({ force: true });
     res.status(200).json("The table for the User model was just (re)created!");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
@@ -119,7 +120,12 @@ router.post("/upload/", async (req, res) => {
 // Get product
 router.get("/getproduct/:id", async (req, res, next) => {
   try {
-    let results = await db.product(req.params.id);
+    // let results = await db.product(req.params.id);
+    const results = await dbs.Product.findAll({
+      where: {
+        product_id: req.params.id
+      }
+    });
     res.json(results);
   } catch (e) {
     console.log(e);
