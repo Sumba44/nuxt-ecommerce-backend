@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true
       },
       uid: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV1,
         unique: true
       },
       name: {
@@ -34,7 +35,8 @@ module.exports = (sequelize, DataTypes) => {
       },
       verified: {
         type: DataTypes.INTEGER,
-      },
+        defaultValue: 0
+      }
     },
     {
       sequelize,
@@ -42,5 +44,16 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "User"
     }
   );
+
+  // sequelize.sync({ force: true }).then(async () => {
+  //   for(let i = 1; i <= 15; i++){
+  //     const user = {
+  //       name: `user${i}`,
+  //       email: `user${i}@mail.com`,
+  //       password: 'P4ssword'
+  //     }
+  //     await User.create(user);
+  //   }
+  // });
   return User;
 };

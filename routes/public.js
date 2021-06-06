@@ -1,21 +1,27 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../controllers/db");
-const { registerValidation } = require("../controllers/validation");
-const { loginValidation } = require("../controllers/validation");
+
+// Modules
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const upload = require("../controllers/upload");
 const { v4: uuidv4 } = require("uuid");
-const email = require("../controllers/email");
-const logger = require("../controllers/logger");
 const fs = require("fs");
 const sharp = require("sharp");
 const chalk = require("chalk");
 
+// Controllers
+const db = require("../controllers/db");
+const { registerValidation } = require("../controllers/validation");
+const { loginValidation } = require("../controllers/validation");
+const upload = require("../controllers/upload");
+const email = require("../controllers/email");
+const logger = require("../controllers/logger");
+
+// Middleware
+const pagination = require("../middleware/pagination");
+
 const dbs = require("../models");
-const { product } = require("../controllers/db");
 
 dotenv.config();
 
@@ -52,10 +58,18 @@ router.get("/sync/", async (req, res, next) => {
 });
 
 // DB select all
-router.get("/findall/", async (req, res, next) => {
+router.get("/findall/", pagination, async (req, res) => {
   try {
-    const results = await dbs.User.findAll();
-    res.status(200).json(results);
+    const { page, size } = req.pagination;
+
+    const response = await dbs.User.findAndCountAll({
+      limit: size,
+      offset: page * size
+    });
+    res.send({
+      data: response.rows,
+      totalPages: Math.ceil(response.count / Number.parseInt(size))
+    });
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
