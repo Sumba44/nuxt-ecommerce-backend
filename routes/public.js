@@ -12,8 +12,7 @@ const chalk = require("chalk");
 
 // Controllers
 const db = require("../controllers/db");
-const { registerValidation } = require("../controllers/validation");
-const { loginValidation } = require("../controllers/validation");
+const { registerValidation, loginValidation } = require("../controllers/validation");
 const upload = require("../controllers/upload");
 const email = require("../controllers/email");
 const logger = require("../controllers/logger");
@@ -28,22 +27,15 @@ dotenv.config();
 // Test method
 router.get("/test/", async (req, res, next) => {
   try {
-    await dbs.sequelize.authenticate();
+    const results = await dbs.sequelize.authenticate();
     console.log("Connection has been established successfully.");
+    logger.log("INFO", "DB Test Method OK", JSON.stringify(results));
     res.status(200).json("DB Test Method OK");
   } catch (error) {
+    logger.log("ERROR", "DB Test failed", error);
     console.error("Unable to connect to the database:", error);
     res.Status(500);
   }
-  // try {
-  //   let results = await db.test();
-  //   logger.log("INFO", "DB Test Method OK", JSON.stringify(results));
-  //   res.status(200).json("DB Test Method OK");
-  // } catch (err) {
-  //   console.log(err);
-  //   logger.log("ERROR", "DB Test failed", err);
-  //   res.Status(500);
-  // }
 });
 
 // DB Sync method
@@ -307,20 +299,30 @@ router.post("/register", async (req, res, next) => {
   if (error) return res.status(400).send(error.details[0].message);
 
   // check if email exists
-  const emailExist = await db.userExists(req.body.email);
-  if (emailExist) return res.status(401).send("Email already exists");
+  // const emailExist = await db.userExists(req.body.email);
+  const emailExist = await dbs.User.findAll({
+    where: {
+      email: req.body.email
+    }
+  });
+  // console.log(emailExist);
+  if (emailExist.length != 0) return res.status(401).send("Email already exists");
 
   // hash the password
   const salt = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(req.body.password, salt);
 
   try {
-    let idGen = uuidv4();
-    await db.registerUser(null, idGen, req.body.name, req.body.email, hashPassword, new Date());
+    const user = {
+      name: req.body.name,
+      email: req.body.email,
+      password: hashPassword
+    };
+    const response = await dbs.User.create(user);
 
     // send email to confirm registration
-    email.registration(idGen, req.body.email);
-    res.status(200).send(idGen);
+    email.registration(response.uid, req.body.email);
+    res.status(200).send("Email sent");
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
