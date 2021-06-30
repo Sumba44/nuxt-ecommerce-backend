@@ -5,7 +5,7 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const { v4: uuidv4 } = require("uuid");
+// const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 const sharp = require("sharp");
 const chalk = require("chalk");
@@ -20,6 +20,7 @@ const logger = require("../controllers/logger");
 // Middleware
 const pagination = require("../middleware/pagination");
 
+// Models
 const dbs = require("../models");
 
 dotenv.config();
@@ -58,21 +59,21 @@ router.get("/findall/", pagination, async (req, res) => {
       limit: size,
       offset: page * size
     });
-    res.send({
+    res.status(200).send({
       data: response.rows,
       totalPages: Math.ceil(response.count / Number.parseInt(size))
     });
   } catch (error) {
-    console.error("Unable to connect to the database:", error);
+    res.status(500).send(error)
   }
 });
 
 // Images folder optimalizator
 router.post("/optimize/", async (req, res, next) => {
   try {
-    fs.readdir("./public/images/opt", (err, files) => {
-      if (err) {
-        res.status(500).send(err);
+    fs.readdir("./public/images/opt", (error, files) => {
+      if (error) {
+        res.status(500).send(error);
       } else {
         if (files.length > 0) {
           files.forEach(file => {
@@ -87,17 +88,17 @@ router.post("/optimize/", async (req, res, next) => {
                 console.log(chalk.yellow(file) + " Resized");
                 // delete original file
                 // fs.unlink(currFile, err => {
-                //   if (err) {
-                //     console.error(err);
-                //     res.status(500).send(err);
+                //   if (error) {
+                //     console.error(error);
+                //     res.status(500).send(error);
                 //     return;
                 //   }
                 //   console.log(chalk.blue(currFile) + " Deleted");
                 // });
               })
-              .catch(err => {
-                console.log(err);
-                res.status(500).send(err);
+              .catch(error => {
+                console.log(error);
+                res.status(500).send(error);
               });
           });
           res.status(200).send("All files successfully resized!");
@@ -106,9 +107,9 @@ router.post("/optimize/", async (req, res, next) => {
         }
       }
     });
-  } catch (err) {
-    console.log(err);
-    logger.log("ERROR", "Error while resizing files", err);
+  } catch (error) {
+    console.log(error);
+    logger.log("ERROR", "Error while resizing files", error);
     res.Status(500);
   }
 });
@@ -117,8 +118,8 @@ router.post("/optimize/", async (req, res, next) => {
 router.post("/upload/", async (req, res) => {
   try {
     upload.singleFile(req, res);
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
     res.Status(500);
   }
 });
@@ -132,10 +133,10 @@ router.get("/getproduct/:id", async (req, res, next) => {
         product_id: req.params.id
       }
     });
-    res.json(results);
-  } catch (e) {
-    console.log(e);
-    res.sendStatus(500);
+    res.status(200).send(results);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
   }
 });
 
@@ -144,9 +145,9 @@ router.get("/search", async (req, res, next) => {
   try {
     let results = await db.searchAll(req.query.search);
     res.setHeader("Content-Type", "application/json");
-    res.json(results);
-  } catch (e) {
-    console.log(e);
+    res.status(200).send(results);
+  } catch (error) {
+    console.log(error);
     res.sendStatus(500);
   }
 });
@@ -157,8 +158,8 @@ router.get("/searchCategories", async (req, res, next) => {
     let results = await db.searchAllCategory(req.query.search);
     res.setHeader("Content-Type", "application/json");
     res.json(results);
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
     res.sendStatus(500);
   }
 });
@@ -169,8 +170,8 @@ router.get("/getallcategories", async (req, res, next) => {
     let results = await db.categories();
     res.setHeader("Content-Type", "application/json");
     res.json(results);
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
     res.sendStatus(500);
   }
 });
@@ -181,8 +182,8 @@ router.get("/getcategory", async (req, res, next) => {
     let results = await db.getCategory(req.query.slug);
     res.setHeader("Content-Type", "application/json");
     res.json(results);
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
     res.sendStatus(500);
   }
 });
@@ -217,8 +218,8 @@ router.get("/getallproductsincategory/:id", async (req, res, next) => {
     results.data = results.data.slice(startIndex, endIndex);
     res.setHeader("Content-Type", "application/json");
     res.json(results);
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
     res.sendStatus(500);
   }
 });
@@ -253,8 +254,8 @@ router.get("/filterproducts/", async (req, res, next) => {
     results.data = results.data.slice(startIndex, endIndex);
     res.setHeader("Content-Type", "application/json");
     res.json(results);
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
     res.sendStatus(500);
   }
 });
@@ -264,8 +265,8 @@ router.post("/addorder", async (req, res, next) => {
   try {
     await db.newOrder(null, req.body.cart, req.body.date);
     res.sendStatus(200);
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
     res.sendStatus(500);
   }
 });
@@ -275,8 +276,8 @@ router.get("/getallorders/", async (req, res, next) => {
   try {
     let results = await db.all();
     res.json(results);
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
     res.sendStatus(500);
   }
 });
@@ -286,8 +287,8 @@ router.get("/getorder/:id", async (req, res, next) => {
   try {
     let results = await db.one(req.params.id);
     res.json(results);
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
     res.sendStatus(500);
   }
 });
@@ -313,12 +314,12 @@ router.post("/register", async (req, res, next) => {
     // send email to confirm registration
     email.registration(response.uid, req.body.email);
     res.status(200).send("Email sent");
-  } catch (e) {
-    if (e.errors.length > 0) {
-      res.status(401).send(e.errors[0].message);
+  } catch (error) {
+    if (error.errors.length > 0) {
+      res.status(401).send(error.errors[0].message);
     } else {
-      console.log(e);
-      res.status(500).send(e);
+      console.log(error);
+      res.status(500).send(error);
     }
   }
 });
@@ -329,9 +330,9 @@ router.get("/verifyemail", async (req, res, next) => {
     const user = jwt.verify(req.query.token, process.env.EMAIL_SECRET);
     await dbs.User.update({ verified: 1 }, { where: { uid: user.id } });
     res.status(200).send("Email verified");
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
   }
 });
 
@@ -345,7 +346,6 @@ router.post("/login", async (req, res, next) => {
   const user = await dbs.User.findAll({ where: { email: req.body.email } });
   if (user[0].email.length < 1) return res.status(405).send("Username or password is wrong.");
 
-  
   // check if email was verified
   if (user[0].verified == 0) return res.status(406).send("Registration not comfirmed yet.");
 
