@@ -244,46 +244,46 @@ db.newProduct = (
 };
 
 // new user
-db.registerUser = (_id, id, name, email, password, date) => {
-  return new Promise((resolve, reject) => {
-    let values = [_id, id, name, email, password, date, 0];
+// db.registerUser = (_id, id, name, email, password, date) => {
+//   return new Promise((resolve, reject) => {
+//     let values = [_id, id, name, email, password, date, 0];
 
-    pool.query(
-      "INSERT INTO `users` (`_id`, `id`, `name`, `email`, `password`, `date`, `verified`) VALUES (?)",
-      [values],
-      (err, results) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(results);
-      }
-    );
-  });
-};
+//     pool.query(
+//       "INSERT INTO `users` (`_id`, `id`, `name`, `email`, `password`, `date`, `verified`) VALUES (?)",
+//       [values],
+//       (err, results) => {
+//         if (err) {
+//           return reject(err);
+//         }
+//         return resolve(results);
+//       }
+//     );
+//   });
+// };
 
 // Check if email exists
-db.userExists = email => {
-  return new Promise((resolve, reject) => {
-    pool.query("SELECT * FROM users WHERE email = ?", [email], (err, results) => {
-      if (err) {
-        return reject(err);
-      }
-      return resolve(results[0]);
-    });
-  });
-};
+// db.userExists = email => {
+//   return new Promise((resolve, reject) => {
+//     pool.query("SELECT * FROM users WHERE email = ?", [email], (err, results) => {
+//       if (err) {
+//         return reject(err);
+//       }
+//       return resolve(results[0]);
+//     });
+//   });
+// };
 
 // Check if email was verified
-db.verifyEmail = (id) => {
-  return new Promise((resolve, reject) => {
-    pool.query("UPDATE users SET verified = 1 WHERE id = ?", [id], (err, results) => {
-      if (err) {
-        return reject(err);
-      }
-      return resolve(results);
-    });
-  });
-};
+// db.verifyEmail = (id) => {
+//   return new Promise((resolve, reject) => {
+//     pool.query("UPDATE users SET verified = 1 WHERE id = ?", [id], (err, results) => {
+//       if (err) {
+//         return reject(err);
+//       }
+//       return resolve(results);
+//     });
+//   });
+// };
 
 // Get user details [private]
 db.getUser = id => {

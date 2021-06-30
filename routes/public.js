@@ -298,16 +298,6 @@ router.post("/register", async (req, res, next) => {
   const { error } = registerValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  // check if email exists
-  // const emailExist = await db.userExists(req.body.email);
-  const emailExist = await dbs.User.findAll({
-    where: {
-      email: req.body.email
-    }
-  });
-  // console.log(emailExist);
-  if (emailExist.length != 0) return res.status(401).send("Email already exists");
-
   // hash the password
   const salt = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(req.body.password, salt);
@@ -324,8 +314,12 @@ router.post("/register", async (req, res, next) => {
     email.registration(response.uid, req.body.email);
     res.status(200).send("Email sent");
   } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
+    if (e.errors.length > 0) {
+      res.status(401).send(e.errors[0].message);
+    } else {
+      console.log(e);
+      res.status(500).send(e);
+    }
   }
 });
 
@@ -333,7 +327,7 @@ router.post("/register", async (req, res, next) => {
 router.get("/verifyemail", async (req, res, next) => {
   try {
     const user = jwt.verify(req.query.token, process.env.EMAIL_SECRET);
-    await db.verifyEmail(user.id);
+    await dbs.User.update({ verified: 1 }, { where: { uid: user.id } });
     res.status(200).send("Email verified");
   } catch (e) {
     console.log(e);
@@ -348,18 +342,19 @@ router.post("/login", async (req, res, next) => {
   if (error) return res.status(400).send(error.details[0].message);
 
   // check if email exists
-  const user = await db.userExists(req.body.email);
-  if (!user) return res.status(405).send("Username or password is wrong.");
+  const user = await dbs.User.findAll({ where: { email: req.body.email } });
+  if (user[0].email.length < 1) return res.status(405).send("Username or password is wrong.");
 
+  
   // check if email was verified
-  if (!user.verified) return res.status(406).send("Registration not comfirmed yet.");
+  if (user[0].verified == 0) return res.status(406).send("Registration not comfirmed yet.");
 
   // is password correct?
-  const validPass = await bcrypt.compare(req.body.password, user.password);
+  const validPass = await bcrypt.compare(req.body.password, user[0].password);
   if (!validPass) return res.status(401).send("Username or password is wrong.");
 
   // create and assign a token
-  const token = jwt.sign({ id: user.id }, process.env.TOKEN_SECRET, {
+  const token = jwt.sign({ id: user[0].uid }, process.env.TOKEN_SECRET, {
     expiresIn: "30d"
   });
   res.header("token", token).send(token);

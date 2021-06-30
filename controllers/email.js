@@ -13,10 +13,10 @@ var transporter = nodemailer.createTransport({
   }
 });
 
-exports.registration = (id, email) => {
+exports.registration = (uid, email) => {
   jwt.sign(
     {
-      id: id
+      id: uid
     },
     process.env.EMAIL_SECRET,
     {
