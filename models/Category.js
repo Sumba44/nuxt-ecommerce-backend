@@ -27,9 +27,6 @@ module.exports = (sequelize, DataTypes) => {
       category_info: {
         type: DataTypes.STRING
       },
-      category_slug: {
-        type: DataTypes.INTEGER
-      },
       category_priority: {
         type: DataTypes.INTEGER
       },
@@ -43,5 +40,19 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "Category"
     }
   );
+
+  // sequelize.sync({ force: true }).then(async () => {
+  //   for(let i = 1; i <= 15; i++){
+  //     const category = {
+  //       category_name: `category_name${i}`,
+  //       category_slug: `category_slug${i}`,
+  //       category_info: `category_info${i}`,
+  //       category_priority: `${i}`,
+  //       category_parent: `${i}`,
+  //     }
+  //     await Category.create(category);
+  //   }
+  // });
+  
   return Category;
 };

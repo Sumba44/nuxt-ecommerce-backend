@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       product_image: {
         type: DataTypes.STRING
       },
-      Product_video: {
+      product_video: {
         type: DataTypes.STRING
       },
       slug: {
@@ -61,5 +61,26 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "Product"
     }
   );
+
+  // sequelize.sync({ force: true }).then(async () => {
+  //   for(let i = 1; i <= 15; i++){
+  //     const product = {
+  //       product_name: `product_name${i}`,
+  //       short_desc: `short_desc${i}`,
+  //       long_desc: `long_desc${i}`,
+  //       rating: `${i}`,
+  //       price: `${i}`,
+  //       wholesale_price: `${i}`,
+  //       sale: `${i}`,
+  //       quantity: `${i}`,
+  //       product_image: `product_image${i}`,
+  //       product_video: `product_video${i}`,
+  //       slug: `slug${i}`,
+  //       supplier: `supplier${i}`
+  //     }
+  //     await Product.create(product);
+  //   }
+  // });
+
   return Product;
 };

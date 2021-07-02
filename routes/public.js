@@ -20,8 +20,9 @@ const logger = require("../controllers/logger");
 // Middleware
 const pagination = require("../middleware/pagination");
 
-// Models
-const dbs = require("../models");
+// Models (Op is for LIKE statements)
+const { dbs, Op } = require("../models");
+const { response } = require("express");
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ router.get("/findall/", pagination, async (req, res) => {
     const { page, size } = req.pagination;
 
     const response = await dbs.User.findAndCountAll({
+      attributes: { exclude: ["password"] },
       limit: size,
       offset: page * size
     });
@@ -64,7 +66,7 @@ router.get("/findall/", pagination, async (req, res) => {
       totalPages: Math.ceil(response.count / Number.parseInt(size))
     });
   } catch (error) {
-    res.status(500).send(error)
+    res.status(500).send(error);
   }
 });
 
@@ -124,40 +126,65 @@ router.post("/upload/", async (req, res) => {
   }
 });
 
-// Get product
+// Get product (/getproduct/id)
 router.get("/getproduct/:id", async (req, res, next) => {
   try {
-    // let results = await db.product(req.params.id);
-    const results = await dbs.Product.findAll({
+    const response = await dbs.Product.findAll({
       where: {
         product_id: req.params.id
       }
     });
-    res.status(200).send(results);
+    res.status(200).send(response);
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
   }
 });
 
-// Search all products
-router.get("/search", async (req, res, next) => {
+// Search through all products (/search?search=product_name)
+router.get("/search", pagination, async (req, res, next) => {
   try {
-    let results = await db.searchAll(req.query.search);
-    res.setHeader("Content-Type", "application/json");
-    res.status(200).send(results);
+    const { page, size } = req.pagination;
+
+    const response = await dbs.Product.findAndCountAll({
+      where: {
+        product_name: {
+          [Op.like]: "%" + req.query.search + "%"
+        }
+      },
+      limit: size,
+      offset: page * size
+    });
+    res.status(200).send({
+      totalResults: response.count,
+      totalPages: Math.ceil(response.count / Number.parseInt(size)),
+      data: response.rows
+    });
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
   }
 });
 
-// Search all categories
-router.get("/searchCategories", async (req, res, next) => {
+// Search all categories (/searchCategories?search=category_name)
+router.get("/searchCategories", pagination, async (req, res, next) => {
   try {
-    let results = await db.searchAllCategory(req.query.search);
-    res.setHeader("Content-Type", "application/json");
-    res.json(results);
+    const { page, size } = req.pagination;
+
+    const response = await dbs.Category.findAndCountAll({
+      where: {
+        category_name: {
+          [Op.like]: "%" + req.query.search + "%"
+        }
+      },
+      limit: size,
+      offset: page * size
+    });
+    res.status(200).send({
+      totalResults: response.count,
+      totalPages: Math.ceil(response.count / Number.parseInt(size)),
+      data: response.rows
+    });
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
@@ -165,59 +192,54 @@ router.get("/searchCategories", async (req, res, next) => {
 });
 
 // Get all categories
-router.get("/getallcategories", async (req, res, next) => {
+router.get("/getallcategories", pagination, async (req, res, next) => {
   try {
-    let results = await db.categories();
-    res.setHeader("Content-Type", "application/json");
-    res.json(results);
+    const { page, size } = req.pagination;
+
+    const response = await dbs.Category.findAndCountAll({
+      limit: size,
+      offset: page * size
+    });
+    res.status(200).send({
+      totalResults: response.count,
+      totalPages: Math.ceil(response.count / Number.parseInt(size)),
+      data: response.rows
+    });
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
   }
 });
 
-// Get category info
+// Get category info (/getcategory?slug=category_slug1)
 router.get("/getcategory", async (req, res, next) => {
   try {
-    let results = await db.getCategory(req.query.slug);
-    res.setHeader("Content-Type", "application/json");
-    res.json(results);
+    const response = await dbs.Category.findAll({ where: { category_slug: req.query.slug } });
+    res.status(200).send(response);
   } catch (error) {
     console.log(error);
-    res.sendStatus(500);
+    res.status(500).send(response);
   }
 });
 
 // Get all products in category
-router.get("/getallproductsincategory/:id", async (req, res, next) => {
-  const page = parseInt(req.query.page);
-  const limit = parseInt(req.query.limit);
-
-  const startIndex = (page - 1) * limit;
-  const endIndex = page * limit;
-
-  const results = {};
-
+router.get("/getallproductsincategory/:id", pagination, async (req, res, next) => {
+  
   try {
-    results.data = await db.allInCategory(req.params.id);
+    const { page, size } = req.pagination;
 
-    if (endIndex < results.data.length) {
-      results.next = {
-        page: page + 1,
-        limit: limit
-      };
-    }
-
-    if (startIndex > 0) {
-      results.previous = {
-        page: page - 1,
-        limit: limit
-      };
-    }
-
-    results.data = results.data.slice(startIndex, endIndex);
-    res.setHeader("Content-Type", "application/json");
-    res.json(results);
+    const response = await dbs.Category.findAndCountAll({
+      where: {
+        category_id: req.params.id
+      },
+      limit: size,
+      offset: page * size
+    });
+    res.status(200).send({
+      totalResults: response.count,
+      totalPages: Math.ceil(response.count / Number.parseInt(size)),
+      data: response.rows
+    });
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
