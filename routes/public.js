@@ -253,19 +253,18 @@ router.get("/getallproductsincategory/:id", async (req, res, next) => {
   // }
 
   try {
-
     const response = await dbs.CategoryConnect.findAll({
       where: {
         product_id: req.params.id
       },
       // attributes: { exclude: ["id"] },
-      include: "categoryconnect"
+      include: "Product"
     });
 
     let popper = [];
 
-    for (let i = 0; i < response.length; i++ ) {
-      popper.push(response[i].categoryconnect[0]);
+    for (let i = 0; i < response.length; i++) {
+      popper.push(response[i].Product[0]);
     }
 
     res.status(200).send(popper);
