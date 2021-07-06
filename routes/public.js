@@ -258,11 +258,17 @@ router.get("/getallproductsincategory/:id", async (req, res, next) => {
       where: {
         product_id: req.params.id
       },
-      attributes: { exclude: ["id"] },
+      // attributes: { exclude: ["id"] },
       include: "categoryconnect"
     });
 
-    res.status(200).send(response);
+    let popper = [];
+
+    for (let i = 0; i < response.length; i++ ) {
+      popper.push(response[i].categoryconnect[0]);
+    }
+
+    res.status(200).send(popper);
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
