@@ -8,7 +8,9 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      // User.hasMany(models.Category, {
+      //   foreignKey: 'id'
+      // })
     }
   }
   User.init(
@@ -45,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  // sequelize.sync({ force: true }).then(async () => {
+  // User.sync({ force: true }).then(async () => {
   //   for(let i = 1; i <= 15; i++){
   //     const user = {
   //       name: `user${i}`,

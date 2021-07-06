@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
+const Product = require("./Product");
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
 const config = require(__dirname + "/../config/config.js")[env];
@@ -33,9 +34,21 @@ Object.keys(dbs).forEach(modelName => {
 });
 
 dbs.sequelize = sequelize;
+
+// dbs.Product.belongsToMany(dbs.Category, { as: "productss", forgeinKey: "product_id", through: dbs.CategoryConnect });
+// dbs.Category.belongsToMany(dbs.Product, { as: "categoriess", forgeinKey: "category_id", through: dbs.CategoryConnect });
+
+
+// dbs.CategoryConnect.hasMany(dbs.Product, { foreignKey: 'product_id'});
+
+// dbs.CategoryConnect.belongsToMany(dbs.Product, { through: 'category_connect'});
+
+// Folder.belongsToMany(Team, { through: 'teams_folders'});
+// Team.belongsToMany(Folder, { through: 'teams_folders'});
+
 // db.Sequelize = Sequelize;
 
-// sequelize.sync({ force: true });
+// sequelize.sync({ alter: true });
 
 // module.exports = db;
 

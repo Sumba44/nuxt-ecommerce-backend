@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Product.belongsTo(models.CategoryConnect, { foreignKey: "product_id", as: "product" });
     }
   }
   Product.init(
@@ -53,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       supplier: {
         type: DataTypes.STRING
-      },
+      }
     },
     {
       sequelize,
@@ -62,7 +62,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  // sequelize.sync({ force: true }).then(async () => {
+  // Product.sync({ force: true }).then(async () => {
   //   for(let i = 1; i <= 15; i++){
   //     const product = {
   //       product_name: `product_name${i}`,

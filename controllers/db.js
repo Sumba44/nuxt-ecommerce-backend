@@ -1,17 +1,18 @@
 // const mysql = require("mysql");
 const dotenv = require("dotenv");
 const logger = require("./logger");
+const mysql2 = require('mysql2');
 
 dotenv.config();
 
-// const pool = mysql.createPool({
-//   connectionLimit: 10,
-//   password: process.env.DB_PASSWORD,
-//   user: process.env.DB_USER,
-//   database: process.env.DB_DATABASE,
-//   host: process.env.DB_HOST,
-//   port: process.env.DB_PORT
-// });
+const pool = mysql2.createPool({
+  connectionLimit: 10,
+  password: process.env.DB_PASSWORD,
+  user: process.env.DB_USER,
+  database: process.env.DB_DATABASE,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT
+});
 
 let db = {};
 
@@ -55,7 +56,7 @@ db.one = id => {
 db.product = id => {
   return new Promise((resolve, reject) => {
     pool.query(
-      "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.wholesale_price, products.sale, products.date_added, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug, suppliers.supplier_name, suppliers.supplier_desc, suppliers.supplier_logo FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id JOIN suppliers ON suppliers.id = products.supplier WHERE products.slug = ? AND product_connect.primary_category = 1",
+      "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.wholesale_price, products.sale, products.date_added, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug, suppliers.supplier_name, suppliers.supplier_desc, suppliers.supplier_logo FROM products JOIN category_connect ON products.product_id = category_connect.product_id JOIN categories ON categories.category_id = category_connect.category_id JOIN suppliers ON suppliers.id = products.supplier WHERE products.slug = ? AND category_connect.primary_category = 1",
       [id],
       (err, results) => {
         if (err) {
@@ -71,10 +72,10 @@ db.product = id => {
 // db.searchAll = search => {
 //   return new Promise((resolve, reject) => {
 //     pool.query(
-//       "SELECT products.product_name, products.rating, products.slug, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id WHERE `product_name` LIKE " +
+//       "SELECT products.product_name, products.rating, products.slug, categories.category, categories.category_slug FROM products JOIN category_connect ON products.product_id = category_connect.product_id JOIN categories ON categories.category_id = category_connect.category_id WHERE `product_name` LIKE " +
 //         "'%" +
 //         search +
-//         "%' AND product_connect.primary_category = 1 ORDER BY `rating` DESC",
+//         "%' AND category_connect.primary_category = 1 ORDER BY `rating` DESC",
 //       [search],
 //       (err, results) => {
 //         if (err) {
@@ -87,20 +88,20 @@ db.product = id => {
 // };
 
 // Search Categories
-// db.searchAllCategory = search => {
-//   return new Promise((resolve, reject) => {
-//     pool.query(
-//       "SELECT category, category_slug FROM categories WHERE `category` LIKE " + "'%" + search + "%'",
-//       [search],
-//       (err, results) => {
-//         if (err) {
-//           return reject(err);
-//         }
-//         return resolve(results);
-//       }
-//     );
-//   });
-// };
+db.searchAllCategory = search => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      "SELECT category, category_slug FROM categories WHERE `category` LIKE " + "'%" + search + "%'",
+      [search],
+      (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(results);
+      }
+    );
+  });
+};
 
 // Get all categories
 db.categories = () => {
@@ -130,7 +131,7 @@ db.getCategory = slug => {
 db.allInCategory = id => {
   return new Promise((resolve, reject) => {
     pool.query(
-      "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.wholesale_price, products.sale, products.date_added, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id WHERE categories.category_slug = ?",
+      "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.wholesale_price, products.sale, products.quantity, products.product_image, products.slug, products.rating, categories.category_name, categories.category_slug FROM products JOIN category_connect ON products.product_id = category_connect.product_id JOIN categories ON categories.category_id = category_connect.category_id WHERE products.product_id = ?",
       [id],
       (err, results) => {
         if (err) {
@@ -167,7 +168,7 @@ db.filterProducts = req => {
     }
 
     pool.query(
-      "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.wholesale_price, products.sale, products.date_added, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug FROM products JOIN product_connect ON products.product_id = product_connect.product_id JOIN categories ON categories.id = product_connect.category_id " +
+      "SELECT products.product_id, products.product_name, products.short_desc, products.long_desc, products.price, products.wholesale_price, products.sale, products.date_added, products.quantity, products.product_image, products.slug, products.rating, categories.category, categories.category_slug FROM products JOIN category_connect ON products.product_id = category_connect.product_id JOIN categories ON categories.category_id = category_connect.category_id " +
         (conditions.length ? "WHERE " + conditions.join(" AND ") + sort : ""),
       values,
       (err, results) => {

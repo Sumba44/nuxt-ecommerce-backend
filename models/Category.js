@@ -7,8 +7,8 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      // define association here
+     static associate(models) {
+      // Category.belongsToMany(Category, { as: "Category", forgeinKey: "category_id", through: "category_connect" });
     }
   }
   Category.init(
@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  // sequelize.sync({ force: true }).then(async () => {
+  // Category.sync({ force: true }).then(async () => {
   //   for(let i = 1; i <= 15; i++){
   //     const category = {
   //       category_name: `category_name${i}`,
@@ -53,6 +53,6 @@ module.exports = (sequelize, DataTypes) => {
   //     await Category.create(category);
   //   }
   // });
-  
+
   return Category;
 };

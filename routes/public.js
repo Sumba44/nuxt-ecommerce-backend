@@ -62,8 +62,10 @@ router.get("/findall/", pagination, async (req, res) => {
       offset: page * size
     });
     res.status(200).send({
-      data: response.rows,
-      totalPages: Math.ceil(response.count / Number.parseInt(size))
+      totalResults: response.count,
+      totalPages: Math.ceil(response.count / Number.parseInt(size)),
+      page: page,
+      data: response.rows
     });
   } catch (error) {
     res.status(500).send(error);
@@ -158,6 +160,7 @@ router.get("/search", pagination, async (req, res, next) => {
     res.status(200).send({
       totalResults: response.count,
       totalPages: Math.ceil(response.count / Number.parseInt(size)),
+      page: page,
       data: response.rows
     });
   } catch (error) {
@@ -183,6 +186,7 @@ router.get("/searchCategories", pagination, async (req, res, next) => {
     res.status(200).send({
       totalResults: response.count,
       totalPages: Math.ceil(response.count / Number.parseInt(size)),
+      page: page,
       data: response.rows
     });
   } catch (error) {
@@ -203,6 +207,7 @@ router.get("/getallcategories", pagination, async (req, res, next) => {
     res.status(200).send({
       totalResults: response.count,
       totalPages: Math.ceil(response.count / Number.parseInt(size)),
+      page: page,
       data: response.rows
     });
   } catch (error) {
@@ -214,7 +219,9 @@ router.get("/getallcategories", pagination, async (req, res, next) => {
 // Get category info (/getcategory?slug=category_slug1)
 router.get("/getcategory", async (req, res, next) => {
   try {
-    const response = await dbs.Category.findAll({ where: { category_slug: req.query.slug } });
+    const response = await dbs.Category.findAll({
+      where: { category_slug: req.query.slug }
+    });
     res.status(200).send(response);
   } catch (error) {
     console.log(error);
@@ -223,23 +230,39 @@ router.get("/getcategory", async (req, res, next) => {
 });
 
 // Get all products in category
-router.get("/getallproductsincategory/:id", pagination, async (req, res, next) => {
-  
-  try {
-    const { page, size } = req.pagination;
+router.get("/getallproductsincategory/:id", async (req, res, next) => {
+  // try {
+  //   const { page, size } = req.pagination;
 
-    const response = await dbs.Category.findAndCountAll({
+  //   const response = await dbs.Category.findAndCountAll({
+  //     where: {
+  //       category_id: req.params.id
+  //     },
+  //     limit: size,
+  //     offset: page * size
+  //   });
+  //   res.status(200).send({
+  //     totalResults: response.count,
+  //     totalPages: Math.ceil(response.count / Number.parseInt(size)),
+  //     page: page,
+  //     data: response.rows
+  //   });
+  // } catch (error) {
+  //   console.log(error);
+  //   res.sendStatus(500);
+  // }
+
+  try {
+
+    const response = await dbs.CategoryConnect.findAll({
       where: {
-        category_id: req.params.id
+        product_id: req.params.id
       },
-      limit: size,
-      offset: page * size
+      attributes: { exclude: ["id"] },
+      include: "categoryconnect"
     });
-    res.status(200).send({
-      totalResults: response.count,
-      totalPages: Math.ceil(response.count / Number.parseInt(size)),
-      data: response.rows
-    });
+
+    res.status(200).send(response);
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
@@ -373,7 +396,7 @@ router.post("/login", async (req, res, next) => {
 
   // is password correct?
   const validPass = await bcrypt.compare(req.body.password, user[0].password);
-  if (!validPass) return res.status(401).send("Username or password is wrong.");
+  if (!validPass) return res.status(405).send("Username or password is wrong.");
 
   // create and assign a token
   const token = jwt.sign({ id: user[0].uid }, process.env.TOKEN_SECRET, {
