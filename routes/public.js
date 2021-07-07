@@ -133,8 +133,8 @@ router.get("/getproduct/:id", async (req, res, next) => {
   try {
     const response = await dbs.Product.findAll({
       where: {
-        product_id: req.params.id
-      }
+        [Op.or]: [{ product_id: req.params.id }, { slug: req.params.id }],
+      },
     });
     res.status(200).send(response);
   } catch (error) {
@@ -230,33 +230,20 @@ router.get("/getcategory", async (req, res, next) => {
 });
 
 // Get all products in category
-router.get("/getallproductsincategory/:id", async (req, res, next) => {
-  // try {
-  //   const { page, size } = req.pagination;
-
-  //   const response = await dbs.Category.findAndCountAll({
-  //     where: {
-  //       category_id: req.params.id
-  //     },
-  //     limit: size,
-  //     offset: page * size
-  //   });
-  //   res.status(200).send({
-  //     totalResults: response.count,
-  //     totalPages: Math.ceil(response.count / Number.parseInt(size)),
-  //     page: page,
-  //     data: response.rows
-  //   });
-  // } catch (error) {
-  //   console.log(error);
-  //   res.sendStatus(500);
-  // }
-
+router.get("/getallproductsincategory/:id", pagination, async (req, res, next) => {
   try {
+    const { page, size } = req.pagination;
+
+    // get from category_connect based on product_id or category_slug
     const response = await dbs.CategoryConnect.findAll({
       where: {
-        product_id: req.params.id
+        [Op.or]: [{ product_id: req.params.id }, { category_slug: req.params.id }],
       },
+      order: [
+        [dbs.Product, req.query.type, req.query.sort],
+      ],
+      limit: size,
+      offset: page * size,
       // attributes: { exclude: ["id"] },
       include: "Product"
     });
@@ -265,45 +252,15 @@ router.get("/getallproductsincategory/:id", async (req, res, next) => {
 
     for (let i = 0; i < response.length; i++) {
       popper.push(response[i].Product[0]);
+      var popperCount = i;
     }
 
-    res.status(200).send(popper);
-  } catch (error) {
-    console.log(error);
-    res.sendStatus(500);
-  }
-});
-
-// Get all products filtered search
-router.get("/filterproducts/", async (req, res, next) => {
-  const page = parseInt(req.query.page);
-  const limit = parseInt(req.query.limit);
-
-  const startIndex = (page - 1) * limit;
-  const endIndex = page * limit;
-
-  const results = {};
-
-  try {
-    results.data = await db.filterProducts(req);
-
-    if (endIndex < results.data.length) {
-      results.next = {
-        page: page + 1,
-        limit: limit
-      };
-    }
-
-    if (startIndex > 0) {
-      results.previous = {
-        page: page - 1,
-        limit: limit
-      };
-    }
-
-    results.data = results.data.slice(startIndex, endIndex);
-    res.setHeader("Content-Type", "application/json");
-    res.json(results);
+    res.status(200).send({
+      totalResults: popperCount + 1,
+      totalPages: Math.ceil(popperCount / Number.parseInt(size)),
+      page: page,
+      data: popper
+    });
   } catch (error) {
     console.log(error);
     res.sendStatus(500);

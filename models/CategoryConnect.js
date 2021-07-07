@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      CategoryConnect.hasMany(models.Product, {foreignKey: "product_id", as: "Product"});
+      CategoryConnect.hasMany(models.Product, { foreignKey: "product_id", as: "Product" });
     }
   }
   CategoryConnect.init(
@@ -24,6 +24,9 @@ module.exports = (sequelize, DataTypes) => {
       category_id: {
         type: DataTypes.INTEGER
       },
+      category_slug: {
+        type: DataTypes.STRING
+      },
       primary: {
         type: DataTypes.INTEGER
       }
@@ -34,5 +37,18 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "CategoryConnect"
     }
   );
+
+  // CategoryConnect.sync({ force: true }).then(async () => {
+  //   for (let i = 1; i <= 15; i++) {
+  //     const categoryconnect = {
+  //       product_id: `1`,
+  //       category_id: "1",
+  //       primary: "0",
+  //       category_slug: "slug1"
+  //     };
+  //     await CategoryConnect.create(categoryconnect);
+  //   }
+  // });
+
   return CategoryConnect;
 };

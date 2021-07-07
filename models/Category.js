@@ -41,11 +41,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  // Category.sync({ force: true }).then(async () => {
+  // Category.sync({ alter: true }).then(async () => {
   //   for(let i = 1; i <= 15; i++){
   //     const category = {
   //       category_name: `category_name${i}`,
-  //       category_slug: `category_slug${i}`,
+  //       category_slug: `slug${i}`,
   //       category_info: `category_info${i}`,
   //       category_priority: `${i}`,
   //       category_parent: `${i}`,
