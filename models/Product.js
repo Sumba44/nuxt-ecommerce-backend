@@ -8,7 +8,11 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Product.belongsTo(models.CategoryConnect, { foreignKey: "product_id", as: "CategoryConnect" });
+      // Product.belongsTo(models.CategoryConnect, { foreignKey: "product_id", as: "CategoryConnect" });
+
+      // Product.hasMany(models.CategoryConnect, { foreignKey: "product_id", as: "Product" });
+      Product.belongsToMany(models.Category, { as: 'Product', through: 'category_connect', foreignKey: 'category_id' })
+      
     }
   }
   Product.init(
@@ -62,28 +66,28 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  Product.sync({ force: true }).then(async () => {
-    for(let i = 1; i <= 15; i++){
+  // Product.sync({ force: true }).then(async () => {
+  //   for(let i = 1; i <= 15; i++){
 
-      let rand = Math.floor(Math.random() * 5) + 1;
+  //     let rand = Math.floor(Math.random() * 5) + 1;
 
-      const product = {
-        product_name: `Fender Squier Classic Vibe '70s${i}`,
-        short_desc: `short_desc${i}`,
-        long_desc: `long_desc${i}`,
-        rating: rand,
-        price: `${i}`,
-        wholesale_price: `${i}`,
-        sale: `${i}`,
-        quantity: `${i}`,
-        product_image: `https://muzikercdn.com/uploads/products/2581/258144/main_fc102930.jpg`,
-        product_video: `product_video${i}`,
-        slug: `slug${i}`,
-        supplier: `supplier${i}`
-      }
-      await Product.create(product);
-    }
-  });
+  //     const product = {
+  //       product_name: `Fender Squier Classic Vibe '70s${i}`,
+  //       short_desc: `short_desc${i}`,
+  //       long_desc: `long_desc${i}`,
+  //       rating: rand,
+  //       price: `${i}`,
+  //       wholesale_price: `${i}`,
+  //       sale: `${i}`,
+  //       quantity: `${i}`,
+  //       product_image: `https://muzikercdn.com/uploads/products/2581/258144/main_fc102930.jpg`,
+  //       product_video: `product_video${i}`,
+  //       slug: `slug${i}`,
+  //       supplier: `supplier${i}`
+  //     }
+  //     await Product.create(product);
+  //   }
+  // });
 
   return Product;
 };
