@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
       // Product.belongsTo(models.CategoryConnect, { foreignKey: "product_id", as: "CategoryConnect" });
 
       // Product.hasMany(models.CategoryConnect, { foreignKey: "product_id", as: "Product" });
-      Product.belongsToMany(models.Category, { as: 'Product', through: 'category_connect', foreignKey: 'category_id' })
+      
+      // Product.belongsToMany(models.Category, { through: 'category_connect' })
       
     }
   }
@@ -66,7 +67,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  // Product.sync({ force: true }).then(async () => {
+  // Product.sync({ alter: true }).then(async () => {
   //   for(let i = 1; i <= 15; i++){
 
   //     let rand = Math.floor(Math.random() * 5) + 1;
