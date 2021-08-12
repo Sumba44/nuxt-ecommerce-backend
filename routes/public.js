@@ -237,7 +237,7 @@ router.get("/getallproductsincategory/:id", pagination, async (req, res, next) =
     // get from category_connect based on product_id or category_slug
     const response = await dbs.CategoryConnect.findAll({
       where: {
-        [Op.or]: [{ category_id: req.params.id }, { category_slug: req.params.id }],
+        [Op.or]: [{ categoryId: req.params.id }, { category_slug: req.params.id }],
       },
       order: [
         [dbs.Product, req.query.type, req.query.sort],
