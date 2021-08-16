@@ -68,7 +68,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   // Product.sync({ alter: true }).then(async () => {
-  //   for(let i = 1; i <= 15; i++){
+  //   for(let i = 1; i <= 10000; i++){
 
   //     let rand = Math.floor(Math.random() * 5) + 1;
 

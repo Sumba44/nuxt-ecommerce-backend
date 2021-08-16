@@ -36,8 +36,12 @@ Object.keys(dbs).forEach(modelName => {
 dbs.sequelize = sequelize;
 // dbs.Sequelize = Sequelize;
 
-var categories = dbs.Product.belongsToMany(dbs.Category, { as: "categories", through: "CategoryConnect", foreignKey: "productId" });
-dbs.Category.belongsToMany(dbs.Product, { through: "CategoryConnect", foreignKey: "categoryId" });
+// var categories = dbs.Product.belongsToMany(dbs.Category, {
+//   as: "categories",
+//   through: "CategoryConnect",
+//   foreignKey: "productId"
+// });
+// dbs.Category.belongsToMany(dbs.Product, { through: "CategoryConnect", foreignKey: "categoryId" });
 
 // sequelize.sync({ force: true });
 
@@ -61,50 +65,35 @@ dbs.Category.belongsToMany(dbs.Product, { through: "CategoryConnect", foreignKey
 //       ]
 //     },
 //     {
-//       include: [{
-//         association: categories,
-//         as: 'categories'
-//       }]
+//       include: [
+//         {
+//           association: categories,
+//           as: "categories"
+//         }
+//       ]
 //     }
 //   );
 
-//   // for (let i = 1; i <= 5; i++) {
-//   //   const category = {
-//   //     category_name: `category_name${i}`,
-//   //     category_slug: `slug${i}`,
-//   //     category_info: `category_info${i}`,
-//   //     category_priority: `${i}`,
-//   //     category_parent: `${i}`
-//   //   };
-//   //   await dbs.Category.create(category);
-//   // }
+  // const pica = dbs.Product.create(
+  //   {
+  //     id: 12,
+  //     product_name: `Fender Squier Classic Vibe '70s`,
+  //     short_desc: `short_desc`,
+  //     long_desc: `long_desc`,
+  //     rating: 1,
+  //     price: 1,
+  //     wholesale_price: 1,
+  //     sale: 1,
+  //     quantity: 1,
+  //     product_image: `https://muzikercdn.com/uploads/products/2581/258144/main_fc102930.jpg`,
+  //     product_video: `product_video1`,
+  //     slug: `slug1`,
+  //     supplier: `supplier1`,
+      
+  //   }
+  // );
 
-//   // for (let i = 1; i <= 5; i++) {
-//   //   let rand = Math.floor(Math.random() * 5) + 1;
-
-//   //   const product = {
-//   //     product_name: `Fender Squier Classic Vibe '70s${i}`,
-//   //     short_desc: `short_desc${i}`,
-//   //     long_desc: `long_desc${i}`,
-//   //     rating: rand,
-//   //     price: `${i}`,
-//   //     wholesale_price: `${i}`,
-//   //     sale: `${i}`,
-//   //     quantity: `${i}`,
-//   //     product_image: `https://muzikercdn.com/uploads/products/2581/258144/main_fc102930.jpg`,
-//   //     product_video: `product_video${i}`,
-//   //     slug: `slug${i}`,
-//   //     supplier: `supplier${i}`
-//   //   };
-//   //   await dbs.Product.create(product);
-//   // }
-
-//   // await dbs.Category.addProduct(product);
-
-//   // const outputt = await dbs.Product.findAll({
-//   //   // include: [dbs.Category]
-//   // });
-//   // console.log(JSON.stringify(outputt));
+  // dbs.Product.addProduct(pica);
 // }
 
 // asyncCall();

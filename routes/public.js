@@ -235,15 +235,16 @@ router.get("/getallproductsincategory/:id", pagination, async (req, res, next) =
     const { page, size } = req.pagination;
 
     // get from category_connect based on product_id or category_slug
-    const response = await dbs.CategoryConnect.findAll({
+    const response = await dbs.CategoryConnect.findAndCountAll({
       where: {
-        [Op.or]: [{ categoryId: req.params.id }, { category_slug: req.params.id }],
+        [Op.or]: [{ category_id: req.params.id }, { category_slug: req.params.id }],
       },
       order: [
         [dbs.Product, req.query.type, req.query.sort],
       ],
       limit: size,
       offset: page * size,
+      subQuery: false,
       attributes: { exclude: ["id"] },
       include: "Product"
     });
@@ -256,10 +257,10 @@ router.get("/getallproductsincategory/:id", pagination, async (req, res, next) =
     // }
 
     res.status(200).send({
-      // totalResults: count,
-      // totalPages: Math.ceil(popperCount / Number.parseInt(size)),
-      // page: page,
-      data: response,
+      totalResults: response.count,
+      totalPages: Math.ceil(response.count / Number.parseInt(size)),
+      page: page,
+      data: response.rows,
 
     });
   } catch (error) {

@@ -45,9 +45,9 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   // CategoryConnect.sync({ force: true }).then(async () => {
-  //   for (let i = 1; i <= 15; i++) {
+  //   for (let i = 1; i <= 9999; i++) {
   //     const categoryconnect = {
-  //       product_id: `1`,
+  //       product_id: `${i}`,
   //       category_id: "1",
   //       primary: "0",
   //       category_slug: "slug1"
@@ -55,6 +55,8 @@ module.exports = (sequelize, DataTypes) => {
   //     await CategoryConnect.create(categoryconnect);
   //   }
   // });
+
+  // console.log("done");
 
   return CategoryConnect;
 };
