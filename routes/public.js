@@ -334,9 +334,9 @@ router.post("/register", async (req, res, next) => {
 });
 
 // Email verification
-router.get("/verifyemail", async (req, res, next) => {
+router.post("/verifyemail", async (req, res, next) => {
   try {
-    const user = jwt.verify(req.query.token, process.env.EMAIL_SECRET);
+    const user = jwt.verify(req.body.token, process.env.EMAIL_SECRET);
     await dbs.User.update({ verified: 1 }, { where: { uid: user.id } });
     res.status(200).send("Email verified");
   } catch (error) {
