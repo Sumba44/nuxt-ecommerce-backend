@@ -22,7 +22,7 @@ const pagination = require("../middleware/pagination");
 
 // Models (Op is for LIKE statements)
 const { dbs, Op } = require("../models");
-const { response } = require("express");
+// const { response } = require("express");
 
 dotenv.config();
 
@@ -36,7 +36,7 @@ router.get("/test/", async (req, res, next) => {
   } catch (error) {
     logger.log("ERROR", "DB Test failed", error);
     console.error("Unable to connect to the database:", error);
-    res.Status(500);
+    res.status(500);
   }
 });
 
@@ -225,7 +225,7 @@ router.get("/getcategory", async (req, res, next) => {
     res.status(200).send(response);
   } catch (error) {
     console.log(error);
-    res.status(500).send(response);
+    res.status(500).send(error);
   }
 });
 
