@@ -1,10 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, Unique, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { Length, IsNotEmpty, IsEmail } from "class-validator";
-import {} from "uuid";
 
-@Entity()
-@Unique(["email"])
-export default class User {
+@Entity("users")
+// @Unique(["email"])
+export class User {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
@@ -14,6 +13,9 @@ export default class User {
 
   @Column()
   firstName: string;
+
+  @Column()
+  lastName: string;
 
   @Column()
   street: string;
