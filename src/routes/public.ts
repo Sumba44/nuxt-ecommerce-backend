@@ -45,25 +45,26 @@ router.get("/test/", async (req, res, next) => {
 
 router.get("/typeorm/", async (req, res, next) => {
   try {
+    
     let user = new User();
-    // user = {
-    //   id: "",
-    //   email: "email@gmail.com",
-    //   firstName: "firstName",
-    //   lastName: "lastName",
-    //   street: "street",
-    //   city: "city",
-    //   country: "country",
-    //   zip: "zip",
-    //   phone: "phone",
-    //   password: "password",
-    //   role: "user",
-    //   emailVerified: "",
-    //   createdAt: "",
-    //   updatedAt: ""
-    // };
+    user = {
+      id: "",
+      email: "email@gmail.com",
+      firstName: "firstName",
+      lastName: "lastName",
+      street: "street",
+      city: "city",
+      country: "country",
+      zip: "zip",
+      phone: "phone",
+      password: "password",
+      role: "user",
+      emailVerified: "",
+      createdAt: new Date,
+      updatedAt: new Date
+    };
 
-    user.email = "email@email.com";
+    //user.email = "email@email.com";
 
     entityManager.save(user)
 

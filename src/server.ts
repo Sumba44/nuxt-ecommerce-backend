@@ -15,14 +15,12 @@ const limiter = rateLimit({
   max: 1000 // limit each IP to 100 requests per windowMs
 });
 
-
-
 createConnection()
   .then(async () => {
     // Import routes
     const hello = require("./routes/hello");
     const publicRouter = require("./routes/public");
-
+    
     const privateRouter = require("./routes/private");
     const port = 5050;
 
@@ -36,7 +34,3 @@ createConnection()
     app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
   })
   .catch(error => console.log(error));
-
-// app.listen(port, () => {
-//   console.log(`Example app listening at http://localhost:${port}`);
-// });
