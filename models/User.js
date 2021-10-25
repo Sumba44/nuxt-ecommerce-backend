@@ -16,14 +16,10 @@ module.exports = (sequelize, DataTypes) => {
   User.init(
     {
       user_id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      uid: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV1,
-        unique: true
+        allowNull: false,
+        primaryKey: true
       },
       name: {
         type: DataTypes.STRING
@@ -48,12 +44,12 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   // User.sync({ force: true }).then(async () => {
-  //   for(let i = 1; i <= 15; i++){
+  //   for (let i = 1; i <= 15; i++) {
   //     const user = {
   //       name: `user${i}`,
   //       email: `user${i}@mail.com`,
-  //       password: 'P4ssword'
-  //     }
+  //       password: "P4ssword"
+  //     };
   //     await User.create(user);
   //   }
   // });

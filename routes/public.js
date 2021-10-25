@@ -133,8 +133,8 @@ router.get("/getproduct/:id", async (req, res, next) => {
   try {
     const response = await dbs.Product.findAll({
       where: {
-        [Op.or]: [{ product_id: req.params.id }, { slug: req.params.id }],
-      },
+        [Op.or]: [{ product_id: req.params.id }, { slug: req.params.id }]
+      }
     });
     res.status(200).send(response);
   } catch (error) {
@@ -235,33 +235,28 @@ router.get("/getallproductsincategory/:id", pagination, async (req, res, next) =
     const { page, size } = req.pagination;
 
     // get from category_connect based on product_id or category_slug
-    const response = await dbs.CategoryConnect.findAndCountAll({
+    const response = await dbs.Category.findAndCountAll({
       where: {
-        [Op.or]: [{ category_id: req.params.id }, { category_slug: req.params.id }],
+        category_id: req.params.id
       },
-      order: [
-        [dbs.Product, req.query.type, req.query.sort],
+      include: [
+        {
+          model: dbs.Product,
+          as: "Products",
+          required: false,
+          // attributes: ['id'],
+          // through: { attributes: [] }
+        }
       ],
-      limit: size,
-      offset: page * size,
       subQuery: false,
-      attributes: { exclude: ["id"] },
-      include: "Product"
+
     });
-
-    // let popper = [];
-
-    // for (let i = 0; i < response.length; i++) {
-    //   popper.push(response[i].Product[0]);
-    //   var popperCount = i;
-    // }
 
     res.status(200).send({
       totalResults: response.count,
       totalPages: Math.ceil(response.count / Number.parseInt(size)),
       page: page,
-      data: response.rows,
-
+      data: response.rows
     });
   } catch (error) {
     console.log(error);
@@ -321,7 +316,7 @@ router.post("/register", async (req, res, next) => {
     const response = await dbs.User.create(user);
 
     // send email to confirm registration
-    email.registration(response.uid, req.body.email);
+    email.registration(response.user_id, req.body.email);
     res.status(200).send("Email sent");
   } catch (error) {
     if (error.errors.length > 0) {

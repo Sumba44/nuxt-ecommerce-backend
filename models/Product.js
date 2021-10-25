@@ -8,12 +8,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // Product.belongsTo(models.CategoryConnect, { foreignKey: "product_id", as: "CategoryConnect" });
-
-      // Product.hasMany(models.CategoryConnect, { foreignKey: "product_id", as: "Product" });
-      
-      // Product.belongsToMany(models.Category, { through: 'category_connect' })
-      
+    
+      Product.belongsToMany(models.Category, {
+        as: "Categories",
+        through: "CategoryConnect",
+        foreignKey: "product_id",
+        otherKey: "category_id"
+      });
     }
   }
   Product.init(
@@ -68,7 +69,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   // Product.sync({ alter: true }).then(async () => {
-  //   for(let i = 1; i <= 10000; i++){
+  //   for(let i = 1; i <= 10; i++){
 
   //     let rand = Math.floor(Math.random() * 5) + 1;
 
