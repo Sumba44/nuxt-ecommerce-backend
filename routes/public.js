@@ -237,7 +237,8 @@ router.get("/getallproductsincategory/:id", pagination, async (req, res, next) =
     // get from category_connect based on product_id or category_slug
     const response = await dbs.Category.findAndCountAll({
       where: {
-        category_id: req.params.id
+        category_id: req.params.id,
+        // category_slug: "slug1"
       },
       include: [
         {
@@ -256,7 +257,7 @@ router.get("/getallproductsincategory/:id", pagination, async (req, res, next) =
       totalResults: response.count,
       totalPages: Math.ceil(response.count / Number.parseInt(size)),
       page: page,
-      data: response.rows
+      data: response.rows[0]
     });
   } catch (error) {
     console.log(error);

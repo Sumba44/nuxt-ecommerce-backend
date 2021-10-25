@@ -8,8 +8,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // CategoryConnect.hasMany(models.Product, { foreignKey: "product_id", as: "Product" });
-      // CategoryConnect.hasMany(models.Category, { foreignKey: "category_id", as: "Category" });
+
     }
   }
   CategoryConnect.init(
