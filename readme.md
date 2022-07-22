@@ -1,6 +1,10 @@
 # Nuxt Ecommerce Backend
 
-One Paragraph of project description goes here
+Node.js e-commerce backend system for my own project (NUXT.js e-commerce) https://github.com/Sumba44/nuxt-ecommerce-fe
+
+Express.js  
+Sequelize
+MySQL
 
 ### Installation
 
